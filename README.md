@@ -172,4 +172,4 @@ lazy var settingController = ConfigurableSheetController(manifest: .init(
 
 ---
 
-Copyright © 2024 Lakr Aream & Own Goal Studio. All Rights Reserved.
+Copyright © 2025 Lakr Aream & Own Goal Studio. All Rights Reserved.
