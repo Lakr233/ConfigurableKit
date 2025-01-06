@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 open class ConfigurableViewController: StackScrollController {
-    let manifest: ConfigurableManifest
+    public let manifest: ConfigurableManifest
     public init(manifest: ConfigurableManifest) {
         self.manifest = manifest
         super.init(nibName: nil, bundle: nil)
@@ -21,14 +21,14 @@ open class ConfigurableViewController: StackScrollController {
         fatalError()
     }
 
-    var cancellables = Set<AnyCancellable>()
+    public var cancellables = Set<AnyCancellable>()
 
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
     }
 
-    override func setupContentViews() {
+    override open func setupContentViews() {
         super.setupContentViews()
         stackView.addArrangedSubview(SeparatorView())
 

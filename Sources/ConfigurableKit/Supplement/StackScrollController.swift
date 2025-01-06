@@ -8,11 +8,11 @@
 import UIKit
 
 open class StackScrollController: UIViewController {
-    let scrollView = UIScrollView()
-    let contentView = UIView()
-    let stackView = UIStackView()
+    public let scrollView = UIScrollView()
+    public let contentView = UIView()
+    public let stackView = UIStackView()
 
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         stackView.axis = .vertical
@@ -67,5 +67,5 @@ open class StackScrollController: UIViewController {
             }
     }
 
-    func setupContentViews() { /* stub */ }
+    open func setupContentViews() { /* stub */ }
 }

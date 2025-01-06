@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 open class ConfigurableSheetController: UINavigationController {
-    let controller: ConfigurableViewController
+    public let controller: ConfigurableViewController
 
     override public var title: String? {
         set { controller.title = newValue }
@@ -19,7 +19,7 @@ open class ConfigurableSheetController: UINavigationController {
     public init(manifest: ConfigurableManifest) {
         controller = .init(manifest: manifest)
         super.init(rootViewController: controller)
-
+        
         modalTransitionStyle = .coverVertical
         modalPresentationStyle = .formSheet
         isModalInPresentation = false
@@ -32,12 +32,12 @@ open class ConfigurableSheetController: UINavigationController {
         fatalError()
     }
 
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
     }
 
-    override public func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    override open func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
         super.pressesBegan(presses, with: event)
         for press in presses {
             if press.key?.keyCode == .keyboardEscape {
