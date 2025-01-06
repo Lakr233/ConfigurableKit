@@ -131,6 +131,7 @@ open class ConfigurableView: UIStackView {
     func configure(description: String) {
         titleLabel.accessibilityHint = description
         descriptionLabel.text = description
+        descriptionLabel.isHidden = description.isEmpty
     }
 
     func subscribeToAvailability(_ publisher: AnyPublisher<Bool, Never>, initialValue: Bool) {

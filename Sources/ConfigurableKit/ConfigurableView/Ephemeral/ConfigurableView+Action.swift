@@ -32,7 +32,7 @@ open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate
         }
     }
 
-    init(responseEverywhere: Bool = false, actionBlock: @escaping ((UIViewController?) -> Void) = { _ in }) {
+    init(responseEverywhere: Bool = true, actionBlock: @escaping ((UIViewController?) -> Void) = { _ in }) {
         self.actionBlock = actionBlock
         super.init()
         contentView.contentMode = .scaleAspectFit
@@ -63,7 +63,7 @@ open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate
     }
 
     class func configure(imageView: UIImageView) {
-        imageView.image = .init(systemName: "play.fill", withConfiguration: .largeIcon)?
+        imageView.image = .init(systemName: "chevron.right", withConfiguration: .largeIcon)?
             .withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .accent
     }

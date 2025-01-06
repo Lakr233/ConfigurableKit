@@ -35,7 +35,7 @@ open class ConfigurableObject {
     public init(
         icon: String,
         title: String,
-        explain: String,
+        explain: String = "",
         key: String,
         defaultValue: AnyCodable,
         annotation: AnyAnnotation,
@@ -44,7 +44,13 @@ open class ConfigurableObject {
     ) {
         self.icon = icon
         self.title = title
-        self.explain = explain
+
+        var buildExplain: String = explain
+        if explain.isEmpty, let submenu = annotation as? SubmenuAnnotation {
+            buildExplain = submenu.children().map(\.title).joined(separator: " / ")
+        }
+        self.explain = buildExplain
+
         self.key = key
         self.annotation = annotation
         self.availabilityRequirement = availabilityRequirement
@@ -62,6 +68,10 @@ open class ConfigurableObject {
             .map { $0.1 ?? .init() }
             .map { CodableStorage.decode(data: $0) ?? .init() }
             .eraseToAnyPublisher()
+    }
+
+    public func publisher<T: Codable>(forKey key: String, type _: T) -> AnyPublisher<T?, Never> {
+        ConfigurableKit.publisher(forKey: key, type: T.self, storage: __value.storage)
     }
 
     @discardableResult
@@ -92,7 +102,7 @@ public extension ConfigurableObject {
     convenience init(
         icon: String,
         title: String,
-        explain: String,
+        explain: String = "",
         key: String,
         defaultValue: AnyCodable,
         annotation: Annotation,
@@ -114,7 +124,7 @@ public extension ConfigurableObject {
     convenience init(
         icon: String,
         title: String,
-        explain: String,
+        explain: String = "",
         key: String,
         defaultValue: some Codable,
         annotation: AnyAnnotation,
@@ -136,7 +146,7 @@ public extension ConfigurableObject {
     convenience init(
         icon: String,
         title: String,
-        explain: String,
+        explain: String = "",
         key: String,
         defaultValue: some Codable,
         annotation: Annotation,
@@ -158,7 +168,7 @@ public extension ConfigurableObject {
     convenience init(
         icon: String,
         title: String,
-        explain: String,
+        explain: String = "",
         ephemeralAnnotation: AnyAnnotation,
         availabilityRequirement: AvailabilityRequirement? = nil
     ) {
@@ -177,7 +187,7 @@ public extension ConfigurableObject {
     convenience init(
         icon: String,
         title: String,
-        explain: String,
+        explain: String = "",
         ephemeralAnnotation: Annotation,
         availabilityRequirement: AvailabilityRequirement? = nil
     ) {

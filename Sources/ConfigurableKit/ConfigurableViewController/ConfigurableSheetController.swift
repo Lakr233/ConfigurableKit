@@ -19,7 +19,7 @@ open class ConfigurableSheetController: UINavigationController {
     public init(manifest: ConfigurableManifest) {
         controller = .init(manifest: manifest)
         super.init(rootViewController: controller)
-        
+
         modalTransitionStyle = .coverVertical
         modalPresentationStyle = .formSheet
         isModalInPresentation = false
