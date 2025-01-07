@@ -43,7 +43,7 @@ class ConfigurableMenuView: ConfigurableValueView {
     }
 
     func executeUpdateValue(_ value: AnyCodable) {
-        var text: String = value.value as? String ?? String(describing: value.value)
+        var text: String = value.decodingValue(defaultValue: String(describing: value))
         for item in selection where item.rawValue == value {
             text = item.title
             break

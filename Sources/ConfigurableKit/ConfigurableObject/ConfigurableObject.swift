@@ -81,15 +81,15 @@ open class ConfigurableObject {
     }
 
     @discardableResult
-    public func whenValueChange<T>(type _: T.Type, to newValue: @escaping (T?) -> Void) -> Self {
-        onChange.sink { newValue($0.value as? T) }.store(in: &cancellable)
+    public func whenValueChange<T: Codable>(type _: T.Type, to newValue: @escaping (T?) -> Void) -> Self {
+        onChange.sink { newValue(try? $0.decodingValue()) }.store(in: &cancellable)
         return self
     }
 
     @discardableResult
-    public func whenValueChange<T: Equatable>(type _: T.Type, to newValue: @escaping (T?) -> T?) -> Self {
+    public func whenValueChange<T: Equatable & Codable>(type _: T.Type, to newValue: @escaping (T?) -> T?) -> Self {
         onChange.sink { [weak self] input in
-            let typedInput = input.value as? T
+            let typedInput: T? = try? input.decodingValue()
             let overwrite = newValue(typedInput)
             guard typedInput != overwrite else { return }
             self?.value = .init(overwrite)

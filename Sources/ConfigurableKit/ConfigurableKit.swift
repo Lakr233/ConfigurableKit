@@ -24,7 +24,7 @@ public enum ConfigurableKit {
         storage: KeyValueStorage = storage
     ) -> AnyPublisher<T?, Never> {
         let data = storage.value(forKey: key) ?? .init()
-        let currentValue = CodableStorage.decode(data: data)?.value as? T
+        let currentValue: T? = try? CodableStorage.decode(data: data)?.decodingValue()
         let firstValuePublisher = Just(currentValue).eraseToAnyPublisher()
         let updateValuePublisher = storage.valueUpdatePublisher
             .filter { $0.0 == key }

@@ -20,7 +20,7 @@ class SelfIncreaseNumberConfigurableView: ConfigurableValueView {
     var button: UIButton { contentView as! UIButton }
 
     var intValue: Int {
-        get { value.value as? Int ?? 0 }
+        get { value.decodingValue(defaultValue: 0) }
         set { value = .init(newValue) }
     }
 

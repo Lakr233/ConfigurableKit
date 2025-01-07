@@ -25,7 +25,7 @@ class ConfigurableBooleanView: ConfigurableValueView {
 
     override func updateValue(_ value: AnyCodable) {
         super.updateValue(value)
-        switchView.setOn(value.value as? Bool ?? false, animated: true)
+        switchView.setOn(value.decodingValue(defaultValue: false), animated: true)
     }
 
     @objc func valueChanged() {

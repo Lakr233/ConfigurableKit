@@ -19,6 +19,21 @@ import Foundation
     public init(_ value: (some Any)?) {
         self.value = value ?? ()
     }
+
+    public func decodingValue<T: Codable>(defaultValue: T) -> T {
+        (try? decodingValue()) ?? defaultValue
+    }
+
+    private static let encoder = JSONEncoder()
+    private static let decoder = JSONDecoder()
+
+    public func decodingValue<T: Codable>() throws -> T? {
+        if let value = value as? T { return value }
+        // code and decode the value for conversion
+        let data = try Self.encoder.encode(self)
+        let object = try Self.decoder.decode(T.self, from: data)
+        return object
+    }
 }
 
 extension AnyCodable: _AnyEncodable, _AnyDecodable {}
