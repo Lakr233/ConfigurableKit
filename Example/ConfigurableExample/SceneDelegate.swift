@@ -5,10 +5,13 @@
 //  Created by 秋星桥 on 2025/1/4.
 //
 
+import Combine
+import ConfigurableKit
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var cancellables = Set<AnyCancellable>()
 
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -22,6 +25,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         #endif
         windowScene.sizeRestrictions?.minimumSize = CGSize(width: 1024, height: 768)
+
+        ConfigurableKit.publisher(forKey: "theme", type: String.self)
+            .sink { [weak self] input in
+                guard let window = self?.window,
+                      let input,
+                      let theme = InterfaceStyle(rawValue: input)
+                else { return }
+
+                window.overrideUserInterfaceStyle = theme.style
+
+                let appearance = theme.appearance
+                let setAppearanceSelector = Selector(("setAppearance:"))
+                guard let app = (NSClassFromString("NSApplication") as? NSObject.Type)?
+                    .value(forKey: "sharedApplication") as? NSObject,
+                    app.responds(to: setAppearanceSelector)
+                else { return }
+                app.perform(setAppearanceSelector, with: appearance)
+            }
+            .store(in: &cancellables)
     }
 
     func sceneDidDisconnect(_: UIScene) {

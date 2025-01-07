@@ -18,9 +18,36 @@ class ViewController: UIViewController {
             explain: "List of value objects that actually stores item",
             ephemeralAnnotation: .submenu { [
                 ConfigurableObject(
+                    icon: "moon",
+                    title: NSLocalizedString("Color Theme", comment: ""),
+                    explain: NSLocalizedString("Select the color theme.", comment: ""),
+                    key: "theme",
+                    defaultValue: InterfaceStyle.system.rawValue,
+                    annotation: .list(selections: [
+                        .init(
+                            icon: "circle.righthalf.fill",
+                            title: NSLocalizedString("System", comment: ""),
+                            section: NSLocalizedString("System", comment: ""),
+                            rawValue: InterfaceStyle.system.rawValue
+                        ),
+                        .init(
+                            icon: "sun",
+                            title: NSLocalizedString("Light", comment: ""),
+                            section: NSLocalizedString("Override", comment: ""),
+                            rawValue: InterfaceStyle.light.rawValue
+                        ),
+                        .init(
+                            icon: "moon",
+                            title: NSLocalizedString("Dark", comment: ""),
+                            section: NSLocalizedString("Override", comment: ""),
+                            rawValue: InterfaceStyle.dark.rawValue
+                        ),
+                    ])
+                ),
+                ConfigurableObject(
                     icon: "plus",
                     title: "Self Increase Button",
-                    explain: "Demo about AnnotationProtocol",
+                    explain: "Demo about AnnotationProtocol, synced below",
                     key: "wiki.qaq.demo.self.increase",
                     defaultValue: 233,
                     annotation: SelfIncreaseNumberAnnotation()
@@ -62,7 +89,7 @@ class ViewController: UIViewController {
                     key: "wiki.qaq.test.boolean.inaccessible.1",
                     defaultValue: true,
                     annotation: .boolean,
-                    availabilityRequirement: .init(key: "wiki.qaq.test.boolean", reversed: true)
+                    availabilityRequirement: .init(key: "wiki.qaq.test.boolean.inaccessible.0", reversed: true)
                 ),
                 ConfigurableObject(
                     icon: "contextualmenu.and.cursorarrow",
