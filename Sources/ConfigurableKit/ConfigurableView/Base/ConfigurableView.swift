@@ -6,7 +6,6 @@
 //
 
 import Combine
-import ConfigurableKitAnyCodable
 import UIKit
 
 let elementSpacing: CGFloat = 10

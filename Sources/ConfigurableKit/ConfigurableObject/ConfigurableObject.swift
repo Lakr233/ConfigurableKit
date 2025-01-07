@@ -6,7 +6,6 @@
 //
 
 import Combine
-import ConfigurableKitAnyCodable
 import Foundation
 import UIKit
 
@@ -26,10 +25,10 @@ open class ConfigurableObject {
 
     let availabilityRequirement: AvailabilityRequirement?
 
-    @CodableStorage var value: AnyCodable
+    @CodableStorage var value: ConfigurableKitAnyCodable
     public var __value: CodableStorage { _value }
 
-    let onChange: AnyPublisher<AnyCodable, Never>
+    let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
     var cancellable: Set<AnyCancellable> = []
 
     public init(
@@ -37,7 +36,7 @@ open class ConfigurableObject {
         title: String,
         explain: String = "",
         key: String,
-        defaultValue: AnyCodable,
+        defaultValue: ConfigurableKitAnyCodable,
         annotation: AnyAnnotation,
         availabilityRequirement: AvailabilityRequirement? = nil,
         storage: KeyValueStorage = ConfigurableKit.storage
@@ -75,7 +74,7 @@ open class ConfigurableObject {
     }
 
     @discardableResult
-    public func whenValueChanged(to newValue: @escaping (AnyCodable) -> Void) -> Self {
+    public func whenValueChanged(to newValue: @escaping (ConfigurableKitAnyCodable) -> Void) -> Self {
         onChange.sink { newValue($0) }.store(in: &cancellable)
         return self
     }
@@ -104,7 +103,7 @@ public extension ConfigurableObject {
         title: String,
         explain: String = "",
         key: String,
-        defaultValue: AnyCodable,
+        defaultValue: ConfigurableKitAnyCodable,
         annotation: Annotation,
         availabilityRequirement: AvailabilityRequirement? = nil,
         storage: KeyValueStorage = ConfigurableKit.storage

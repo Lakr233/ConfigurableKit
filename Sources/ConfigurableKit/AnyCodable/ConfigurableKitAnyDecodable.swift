@@ -29,21 +29,21 @@ import Foundation
      let decoder = JSONDecoder()
      let dictionary = try! decoder.decode([String: AnyDecodable].self, from: json)
  */
-@frozen public struct AnyDecodable: Decodable {
-    public let value: Any
+@frozen public struct ConfigurableKitAnyDecodable: Decodable {
+    public let contentValue: Any
 
     public init(_ value: (some Any)?) {
-        self.value = value ?? ()
+        contentValue = value ?? ()
     }
 }
 
 @usableFromInline
 protocol _AnyDecodable {
-    var value: Any { get }
+    var contentValue: Any { get }
     init<T>(_ value: T?)
 }
 
-extension AnyDecodable: _AnyDecodable {}
+extension ConfigurableKitAnyDecodable: _AnyDecodable {}
 
 extension _AnyDecodable {
     public init(from decoder: Decoder) throws {
@@ -69,19 +69,19 @@ extension _AnyDecodable {
             self.init(data)
         } else if let date = try? container.decode(Date.self) {
             self.init(date)
-        } else if let array = try? container.decode([AnyDecodable].self) {
-            self.init(array.map(\.value))
-        } else if let dictionary = try? container.decode([String: AnyDecodable].self) {
-            self.init(dictionary.mapValues { $0.value })
+        } else if let array = try? container.decode([ConfigurableKitAnyDecodable].self) {
+            self.init(array.map(\.contentValue))
+        } else if let dictionary = try? container.decode([String: ConfigurableKitAnyDecodable].self) {
+            self.init(dictionary.mapValues { $0.contentValue })
         } else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "AnyDecodable value cannot be decoded")
         }
     }
 }
 
-extension AnyDecodable: Equatable {
-    public static func == (lhs: AnyDecodable, rhs: AnyDecodable) -> Bool {
-        switch (lhs.value, rhs.value) {
+extension ConfigurableKitAnyDecodable: Equatable {
+    public static func == (lhs: ConfigurableKitAnyDecodable, rhs: ConfigurableKitAnyDecodable) -> Bool {
+        switch (lhs.contentValue, rhs.contentValue) {
         #if canImport(Foundation)
             case is (NSNull, NSNull), is (Void, Void):
                 return true
@@ -118,9 +118,9 @@ extension AnyDecodable: Equatable {
             return lhs == rhs
         case let (lhs as Date, rhs as Date):
             return lhs == rhs
-        case let (lhs as [String: AnyDecodable], rhs as [String: AnyDecodable]):
+        case let (lhs as [String: ConfigurableKitAnyDecodable], rhs as [String: ConfigurableKitAnyDecodable]):
             return lhs == rhs
-        case let (lhs as [AnyDecodable], rhs as [AnyDecodable]):
+        case let (lhs as [ConfigurableKitAnyDecodable], rhs as [ConfigurableKitAnyDecodable]):
             return lhs == rhs
         default:
             return false
@@ -128,22 +128,22 @@ extension AnyDecodable: Equatable {
     }
 }
 
-extension AnyDecodable: CustomStringConvertible {
+extension ConfigurableKitAnyDecodable: CustomStringConvertible {
     public var description: String {
-        switch value {
+        switch contentValue {
         case is Void:
             String(describing: nil as Any?)
         case let value as CustomStringConvertible:
             value.description
         default:
-            String(describing: value)
+            String(describing: contentValue)
         }
     }
 }
 
-extension AnyDecodable: CustomDebugStringConvertible {
+extension ConfigurableKitAnyDecodable: CustomDebugStringConvertible {
     public var debugDescription: String {
-        switch value {
+        switch contentValue {
         case let value as CustomDebugStringConvertible:
             "AnyDecodable(\(value.debugDescription))"
         default:
@@ -152,9 +152,9 @@ extension AnyDecodable: CustomDebugStringConvertible {
     }
 }
 
-extension AnyDecodable: Hashable {
+extension ConfigurableKitAnyDecodable: Hashable {
     public func hash(into hasher: inout Hasher) {
-        switch value {
+        switch contentValue {
         case let value as Bool:
             hasher.combine(value)
         case let value as Int:
@@ -187,9 +187,9 @@ extension AnyDecodable: Hashable {
             hasher.combine(value)
         case let value as Date:
             hasher.combine(value)
-        case let value as [String: AnyDecodable]:
+        case let value as [String: ConfigurableKitAnyDecodable]:
             hasher.combine(value)
-        case let value as [AnyDecodable]:
+        case let value as [ConfigurableKitAnyDecodable]:
             hasher.combine(value)
         default:
             break

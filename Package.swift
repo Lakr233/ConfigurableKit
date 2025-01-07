@@ -17,9 +17,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "ConfigurableKit", dependencies: [
-            "ConfigurableKitAnyCodable",
             .product(name: "OrderedCollections", package: "swift-collections"),
         ]),
-        .target(name: "ConfigurableKitAnyCodable"),
     ]
 )

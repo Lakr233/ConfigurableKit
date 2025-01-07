@@ -5,7 +5,6 @@
 //  Created by 秋星桥 on 2025/1/5.
 //
 
-import ConfigurableKitAnyCodable
 import UIKit
 
 open class ListAnnotation: ConfigurableObject.AnnotationProtocol {
@@ -24,13 +23,13 @@ public extension ListAnnotation {
         let icon: String
         let title: String
         let section: String
-        let rawValue: AnyCodable // used for callback
+        let rawValue: ConfigurableKitAnyCodable // used for callback
 
         public init(
             icon: String = "",
             title: String,
             section: String = "",
-            rawValue: AnyCodable
+            rawValue: ConfigurableKitAnyCodable
         ) {
             self.icon = icon
             self.title = title

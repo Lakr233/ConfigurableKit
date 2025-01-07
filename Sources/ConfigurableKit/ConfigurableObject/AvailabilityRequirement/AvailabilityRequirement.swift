@@ -5,7 +5,6 @@
 //  Created by 秋星桥 on 2025/1/5.
 //
 
-import ConfigurableKitAnyCodable
 import Foundation
 
 public extension ConfigurableObject {
@@ -33,8 +32,8 @@ extension ConfigurableObject.AvailabilityRequirement {
     }
 
     private func compareTypeAndHash(with target: any Hashable) -> Bool {
-        if let compareTarget = target as? AnyCodable {
-            return AnyCodable(match) == compareTarget
+        if let compareTarget = target as? ConfigurableKitAnyCodable {
+            return ConfigurableKitAnyCodable(match) == compareTarget
         }
         guard type(of: target) == type(of: match) else {
             return false

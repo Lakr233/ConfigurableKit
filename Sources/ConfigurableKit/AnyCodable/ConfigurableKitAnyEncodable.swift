@@ -27,21 +27,21 @@ import Foundation
      let encoder = JSONEncoder()
      let json = try! encoder.encode(dictionary)
  */
-@frozen public struct AnyEncodable: Encodable {
-    public let value: Any
+@frozen public struct ConfigurableKitAnyEncodable: Encodable {
+    public let contentValue: Any
 
     public init(_ value: (some Any)?) {
-        self.value = value ?? ()
+        contentValue = value ?? ()
     }
 }
 
 @usableFromInline
 protocol _AnyEncodable {
-    var value: Any { get }
+    var contentValue: Any { get }
     init<T>(_ value: T?)
 }
 
-extension AnyEncodable: _AnyEncodable {}
+extension ConfigurableKitAnyEncodable: _AnyEncodable {}
 
 // MARK: - Encodable
 
@@ -49,7 +49,7 @@ extension _AnyEncodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
-        switch value {
+        switch contentValue {
         #if canImport(Foundation)
             case is NSNull:
                 try container.encodeNil()
@@ -97,14 +97,14 @@ extension _AnyEncodable {
                 try container.encode(url)
         #endif
         case let array as [Any?]:
-            try container.encode(array.map { AnyEncodable($0) })
+            try container.encode(array.map { ConfigurableKitAnyEncodable($0) })
         case let dictionary as [String: Any?]:
-            try container.encode(dictionary.mapValues { AnyEncodable($0) })
+            try container.encode(dictionary.mapValues { ConfigurableKitAnyEncodable($0) })
         case let encodable as Encodable:
             try encodable.encode(to: encoder)
         default:
             let context = EncodingError.Context(codingPath: container.codingPath, debugDescription: "AnyEncodable value cannot be encoded")
-            throw EncodingError.invalidValue(value, context)
+            throw EncodingError.invalidValue(contentValue, context)
         }
     }
 
@@ -141,9 +141,9 @@ extension _AnyEncodable {
     #endif
 }
 
-extension AnyEncodable: Equatable {
-    public static func == (lhs: AnyEncodable, rhs: AnyEncodable) -> Bool {
-        switch (lhs.value, rhs.value) {
+extension ConfigurableKitAnyEncodable: Equatable {
+    public static func == (lhs: ConfigurableKitAnyEncodable, rhs: ConfigurableKitAnyEncodable) -> Bool {
+        switch (lhs.contentValue, rhs.contentValue) {
         case is (Void, Void):
             true
         case let (lhs as Bool, rhs as Bool):
@@ -178,9 +178,9 @@ extension AnyEncodable: Equatable {
             lhs == rhs
         case let (lhs as Date, rhs as Date):
             lhs == rhs
-        case let (lhs as [String: AnyEncodable], rhs as [String: AnyEncodable]):
+        case let (lhs as [String: ConfigurableKitAnyEncodable], rhs as [String: ConfigurableKitAnyEncodable]):
             lhs == rhs
-        case let (lhs as [AnyEncodable], rhs as [AnyEncodable]):
+        case let (lhs as [ConfigurableKitAnyEncodable], rhs as [ConfigurableKitAnyEncodable]):
             lhs == rhs
         default:
             false
@@ -188,22 +188,22 @@ extension AnyEncodable: Equatable {
     }
 }
 
-extension AnyEncodable: CustomStringConvertible {
+extension ConfigurableKitAnyEncodable: CustomStringConvertible {
     public var description: String {
-        switch value {
+        switch contentValue {
         case is Void:
             String(describing: nil as Any?)
         case let value as CustomStringConvertible:
             value.description
         default:
-            String(describing: value)
+            String(describing: contentValue)
         }
     }
 }
 
-extension AnyEncodable: CustomDebugStringConvertible {
+extension ConfigurableKitAnyEncodable: CustomDebugStringConvertible {
     public var debugDescription: String {
-        switch value {
+        switch contentValue {
         case let value as CustomDebugStringConvertible:
             "AnyEncodable(\(value.debugDescription))"
         default:
@@ -212,14 +212,14 @@ extension AnyEncodable: CustomDebugStringConvertible {
     }
 }
 
-extension AnyEncodable: ExpressibleByNilLiteral {}
-extension AnyEncodable: ExpressibleByBooleanLiteral {}
-extension AnyEncodable: ExpressibleByIntegerLiteral {}
-extension AnyEncodable: ExpressibleByFloatLiteral {}
-extension AnyEncodable: ExpressibleByStringLiteral {}
-extension AnyEncodable: ExpressibleByStringInterpolation {}
-extension AnyEncodable: ExpressibleByArrayLiteral {}
-extension AnyEncodable: ExpressibleByDictionaryLiteral {}
+extension ConfigurableKitAnyEncodable: ExpressibleByNilLiteral {}
+extension ConfigurableKitAnyEncodable: ExpressibleByBooleanLiteral {}
+extension ConfigurableKitAnyEncodable: ExpressibleByIntegerLiteral {}
+extension ConfigurableKitAnyEncodable: ExpressibleByFloatLiteral {}
+extension ConfigurableKitAnyEncodable: ExpressibleByStringLiteral {}
+extension ConfigurableKitAnyEncodable: ExpressibleByStringInterpolation {}
+extension ConfigurableKitAnyEncodable: ExpressibleByArrayLiteral {}
+extension ConfigurableKitAnyEncodable: ExpressibleByDictionaryLiteral {}
 
 extension _AnyEncodable {
     public init(nilLiteral _: ()) {
@@ -255,9 +255,9 @@ extension _AnyEncodable {
     }
 }
 
-extension AnyEncodable: Hashable {
+extension ConfigurableKitAnyEncodable: Hashable {
     public func hash(into hasher: inout Hasher) {
-        switch value {
+        switch contentValue {
         case let value as Bool:
             hasher.combine(value)
         case let value as Int:
@@ -290,9 +290,9 @@ extension AnyEncodable: Hashable {
             hasher.combine(value)
         case let value as Date:
             hasher.combine(value)
-        case let value as [String: AnyEncodable]:
+        case let value as [String: ConfigurableKitAnyEncodable]:
             hasher.combine(value)
-        case let value as [AnyEncodable]:
+        case let value as [ConfigurableKitAnyEncodable]:
             hasher.combine(value)
         default:
             break

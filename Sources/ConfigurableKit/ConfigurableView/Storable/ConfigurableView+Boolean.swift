@@ -6,11 +6,15 @@
 //
 
 import Combine
-import ConfigurableKitAnyCodable
 import UIKit
 
 class ConfigurableBooleanView: ConfigurableValueView {
     var switchView: UISwitch { contentView as! UISwitch }
+
+    var boolValue: Bool {
+        get { value.decodingValue(defaultValue: false) }
+        set { value = .init(newValue) }
+    }
 
     override init(storage: CodableStorage) {
         super.init(storage: storage)
@@ -23,9 +27,9 @@ class ConfigurableBooleanView: ConfigurableValueView {
         UISwitch()
     }
 
-    override func updateValue(_ value: AnyCodable) {
-        super.updateValue(value)
-        switchView.setOn(value.decodingValue(defaultValue: false), animated: true)
+    override func updateValue() {
+        super.updateValue()
+        switchView.setOn(boolValue, animated: true)
     }
 
     @objc func valueChanged() {

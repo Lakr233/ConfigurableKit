@@ -6,7 +6,7 @@
 //
 
 import ConfigurableKit
-import ConfigurableKitAnyCodable
+
 import Foundation
 import UIKit
 
@@ -36,8 +36,8 @@ class SelfIncreaseNumberConfigurableView: ConfigurableValueView {
         return button
     }
 
-    override func updateValue(_ value: AnyCodable) {
-        super.updateValue(value)
+    override func updateValue() {
+        super.updateValue()
         button.setTitle("\(intValue)", for: .normal)
     }
 

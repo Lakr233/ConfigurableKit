@@ -115,7 +115,7 @@ class SelfIncreaseNumberConfigurableView: ConfigurableValueView {
     var button: UIButton { contentView as! UIButton }
 
     var intValue: Int {
-        get { value.value as? Int ?? 0 }
+        get { value.decodingValue(defaultValue: 0) }
         set { value = .init(newValue) }
     }
 
@@ -131,8 +131,8 @@ class SelfIncreaseNumberConfigurableView: ConfigurableValueView {
         return button
     }
 
-    override func updateValue(_ value: AnyCodable) {
-        super.updateValue(value)
+    override func updateValue() {
+        super.updateValue()
         button.setTitle("\(intValue)", for: .normal)
     }
 

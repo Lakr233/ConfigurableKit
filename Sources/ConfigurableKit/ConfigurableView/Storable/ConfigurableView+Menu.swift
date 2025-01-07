@@ -6,7 +6,6 @@
 //
 
 import Combine
-import ConfigurableKitAnyCodable
 import OrderedCollections
 import UIKit
 
@@ -30,8 +29,9 @@ class ConfigurableMenuView: ConfigurableValueView {
         EasyHitButton()
     }
 
-    override func updateValue(_ value: AnyCodable) {
-        super.updateValue(value)
+    override func updateValue() {
+        super.updateValue()
+        let value = value
         UIView.transition(
             with: self,
             duration: 0.25,
@@ -42,7 +42,7 @@ class ConfigurableMenuView: ConfigurableValueView {
         }
     }
 
-    func executeUpdateValue(_ value: AnyCodable) {
+    func executeUpdateValue(_ value: ConfigurableKitAnyCodable) {
         var text: String = value.decodingValue(defaultValue: String(describing: value))
         for item in selection where item.rawValue == value {
             text = item.title

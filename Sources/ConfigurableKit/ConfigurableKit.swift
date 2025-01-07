@@ -9,8 +9,6 @@ import Combine
 import Foundation
 import UIKit
 
-@_exported import ConfigurableKitAnyCodable
-
 public enum ConfigurableKit {
     public static var storage: KeyValueStorage = UserDefaultKeyValueStorage(suite: .standard) {
         didSet {
@@ -30,7 +28,7 @@ public enum ConfigurableKit {
             .filter { $0.0 == key }
             .map(\.1)
             .map { data -> T? in
-                if let data, let value = CodableStorage.decode(data: data)?.value as? T {
+                if let data, let value: T? = try? CodableStorage.decode(data: data)?.decodingValue() {
                     return value
                 } else {
                     return nil

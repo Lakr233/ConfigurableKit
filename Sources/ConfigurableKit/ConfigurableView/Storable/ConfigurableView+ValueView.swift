@@ -6,11 +6,10 @@
 //
 
 import Combine
-import ConfigurableKitAnyCodable
 import UIKit
 
 open class ConfigurableValueView: ConfigurableView {
-    @CodableStorage public var value: AnyCodable
+    @CodableStorage public var value: ConfigurableKitAnyCodable
 
     public init(storage: CodableStorage) {
         _value = .init(
@@ -23,14 +22,13 @@ open class ConfigurableValueView: ConfigurableView {
 
         storage.storage.valueUpdatePublisher
             .filter { $0.0 == storage.key }
-            .map { $0.1 ?? .init() }
-            .map { data -> AnyCodable in CodableStorage.decode(data: data) ?? false }
+            .map { _ in () }
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                self?.updateValue(value)
+            .sink { [weak self] _ in
+                self?.updateValue()
             }
             .store(in: &cancellables)
-        updateValue(value)
+        updateValue()
     }
 
     @available(*, unavailable)
@@ -42,7 +40,7 @@ open class ConfigurableValueView: ConfigurableView {
         UISwitch()
     }
 
-    open func updateValue(_ value: AnyCodable) {
+    open func updateValue() {
         _ = value // stub
     }
 }
