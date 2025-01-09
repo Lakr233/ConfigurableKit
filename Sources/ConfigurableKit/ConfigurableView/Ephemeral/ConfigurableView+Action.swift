@@ -20,9 +20,9 @@ open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate
         action: #selector(openItem)
     )
 
-    var imageView: UIImageView { contentView as! UIImageView }
+    open var imageView: UIImageView { contentView as! UIImageView }
 
-    var isHighlighted: Bool = false {
+    open var isHighlighted: Bool = false {
         didSet {
             guard oldValue != isHighlighted else { return }
             let value = isHighlighted
@@ -32,7 +32,7 @@ open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate
         }
     }
 
-    init(responseEverywhere: Bool = true, actionBlock: @escaping ((UIViewController?) -> Void) = { _ in }) {
+    public init(responseEverywhere: Bool = true, actionBlock: @escaping ((UIViewController?) -> Void) = { _ in }) {
         self.actionBlock = actionBlock
         super.init()
         contentView.contentMode = .scaleAspectFit

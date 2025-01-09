@@ -13,12 +13,12 @@ let elementSpacing: CGFloat = 10
 open class ConfigurableView: UIStackView {
     lazy var headerStackView = UIStackView()
 
-    lazy var iconContainer = UIView()
-    lazy var iconView = UIImageView()
-    lazy var titleLabel = UILabel()
+    open lazy var iconContainer = UIView()
+    open lazy var iconView = UIImageView()
+    open lazy var titleLabel = UILabel()
 
-    lazy var verticalStack = UIStackView()
-    lazy var descriptionLabel = UILabel()
+    open lazy var verticalStack = UIStackView()
+    open lazy var descriptionLabel = UILabel()
     lazy var contentContainer = EasyHitView()
 
     public lazy var contentView = Self.createContentView()
@@ -119,23 +119,23 @@ open class ConfigurableView: UIStackView {
         .init()
     }
 
-    func configure(icon: UIImage?) {
+    open func configure(icon: UIImage?) {
         iconView.image = icon?.applyingSymbolConfiguration(.icon)
     }
 
-    func configure(title: String) {
+    open func configure(title: String) {
         titleLabel.text = title
     }
 
-    func configure(description: String) {
+    open func configure(description: String) {
         titleLabel.accessibilityHint = description
         descriptionLabel.text = description
         descriptionLabel.isHidden = description.isEmpty
     }
 
-    func subscribeToAvailability(_ publisher: AnyPublisher<Bool, Never>, initialValue: Bool) {
+    open func subscribeToAvailability(_ publisher: AnyPublisher<Bool, Never>, initialValue: Bool) {
         publisher
-            .receive(on: DispatchQueue.main)
+            .ensureMainThread()
             .sink { [weak self] isEnabled in
                 self?.update(availability: isEnabled)
             }
@@ -148,5 +148,23 @@ open class ConfigurableView: UIStackView {
         UIView.animate(withDuration: 0.25) {
             self.alpha = availability ? 1 : 0.25
         }
+    }
+}
+
+extension Publisher {
+    func ensureMainThread() -> AnyPublisher<Output, Failure> {
+        flatMap { value -> AnyPublisher<Output, Failure> in
+            if Thread.isMainThread {
+                return Just(value)
+                    .setFailureType(to: Failure.self)
+                    .eraseToAnyPublisher()
+            } else {
+                return Just(value)
+                    .delay(for: .zero, scheduler: DispatchQueue.main)
+                    .setFailureType(to: Failure.self)
+                    .eraseToAnyPublisher()
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }

@@ -39,7 +39,8 @@ open class ConfigurableViewController: StackScrollController {
         }
 
         stackView.addArrangedSubviewWithMargin(manifest.footer) { input in
-            .init(top: input.top, left: 0, bottom: input.bottom, right: 0)
+            input.left = 0
+            input.right = 0
         }
     }
 }

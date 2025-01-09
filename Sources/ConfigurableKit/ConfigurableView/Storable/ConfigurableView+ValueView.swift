@@ -23,6 +23,7 @@ open class ConfigurableValueView: ConfigurableView {
         storage.storage.valueUpdatePublisher
             .filter { $0.0 == storage.key }
             .map { _ in () }
+            // delay an update, property wrapper getter and setter requires exclusive access
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.updateValue()
@@ -40,7 +41,5 @@ open class ConfigurableValueView: ConfigurableView {
         UISwitch()
     }
 
-    open func updateValue() {
-        _ = value // stub
-    }
+    open func updateValue() {}
 }

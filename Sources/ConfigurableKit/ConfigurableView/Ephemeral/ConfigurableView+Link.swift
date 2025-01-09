@@ -13,7 +13,7 @@ open class ConfigurableLinkView: ConfigurableView {
 
     var button: EasyHitButton { contentView as! EasyHitButton }
 
-    init(buttonTitle: String, url: URL) {
+    public init(buttonTitle: String, url: URL) {
         self.url = url
 
         super.init()

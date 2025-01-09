@@ -61,7 +61,7 @@ open class StackScrollController: UIViewController {
             }.forEach {
                 $0.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    $0.heightAnchor.constraint(equalToConstant: 0.75),
+                    $0.heightAnchor.constraint(equalToConstant: 0.5),
                     $0.widthAnchor.constraint(equalTo: stackView.widthAnchor),
                 ])
             }

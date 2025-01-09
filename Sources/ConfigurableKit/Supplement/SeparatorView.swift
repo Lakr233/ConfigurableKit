@@ -5,23 +5,18 @@
 //  Created by 秋星桥 on 2025/1/4.
 //
 
-//
-//  SeparatorView.swift
-//  TRApp
-//
-//  Created by 秋星桥 on 2024/2/13.
-//
-
 import UIKit
 
-class SeparatorView: UIView {
+open class SeparatorView: UIView {
+    public static let color: UIColor = .gray.withAlphaComponent(0.1)
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .gray.withAlphaComponent(0.1)
+        backgroundColor = Self.color
     }
 
     @available(*, unavailable)
-    required init?(coder _: NSCoder) {
+    public required init?(coder _: NSCoder) {
         fatalError()
     }
 }

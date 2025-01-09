@@ -16,6 +16,41 @@ public enum ConfigurableKit {
         }
     }
 
+    #if DEBUG
+        public static func printEveryValueChange() {
+            type(of: storage).printEveryValueChange()
+        }
+    #endif
+
+    public static func set(
+        value: (some Codable)?,
+        forKey key: String,
+        storage: KeyValueStorage = storage
+    ) {
+        let data = CodableStorage.encode(value: .init(value))
+        storage.setValue(data, forKey: key)
+    }
+
+    public static func value<T: Codable>(
+        forKey key: String,
+        defaultValue: T,
+        storage: KeyValueStorage
+    ) -> T {
+        value(forKey: key, storage: storage) ?? defaultValue
+    }
+
+    public static func value<T: Codable>(forKey key: String, storage: KeyValueStorage) -> T? {
+        let data = storage.value(forKey: key) ?? .init()
+        let currentValue: T? = try? CodableStorage.decode(data: data)?.decodingValue()
+        return currentValue
+    }
+
+    /// Receive value immediately and it's update in the future
+    /// - Parameters:
+    ///   - key: String value representing the key
+    ///   - type: Expected type to be decoded
+    ///   - storage: Value must be set via this storage
+    /// - Returns: A publisher that will emit the value immediately and also when the value is updated
     public static func publisher<T: Codable>(
         forKey key: String,
         type _: T.Type,

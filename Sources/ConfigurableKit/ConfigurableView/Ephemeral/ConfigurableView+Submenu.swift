@@ -11,7 +11,7 @@ import UIKit
 open class ConfigurableSubmenuView: ConfigurableActionView {
     let childrenReader: () -> [ConfigurableObject]
 
-    init(childrenReader: @escaping () -> [ConfigurableObject]) {
+    public init(childrenReader: @escaping () -> [ConfigurableObject]) {
         self.childrenReader = childrenReader
 
         super.init(responseEverywhere: true)

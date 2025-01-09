@@ -13,7 +13,7 @@ class ConfigurableMenuView: ConfigurableValueView {
     var button: EasyHitButton { contentView as! EasyHitButton }
     let selection: [ListAnnotation.ValueItem]
 
-    init(storage: CodableStorage, selection: [ListAnnotation.ValueItem]) {
+    public init(storage: CodableStorage, selection: [ListAnnotation.ValueItem]) {
         self.selection = selection
         super.init(storage: storage)
         button.titleLabel?.adjustsFontForContentSizeCategory = true

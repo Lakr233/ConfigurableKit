@@ -10,7 +10,7 @@ import UIKit
 open class ConfigurablePageView: ConfigurableActionView {
     let page: () -> (UIViewController?)
 
-    init(page: @escaping () -> UIViewController?) {
+    public init(page: @escaping () -> UIViewController?) {
         self.page = page
 
         super.init(responseEverywhere: true)

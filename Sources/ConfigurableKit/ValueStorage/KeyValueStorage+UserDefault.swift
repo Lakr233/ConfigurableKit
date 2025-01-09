@@ -6,20 +6,49 @@
 //
 
 import Combine
-
 import Foundation
 
 open class UserDefaultKeyValueStorage: KeyValueStorage {
-    public init(suite _: UserDefaults) {}
+    let suite: UserDefaults
+
+    public init(suite: UserDefaults) {
+        self.suite = suite
+    }
 
     public func value(forKey: String) -> Data? {
-        UserDefaults.standard.data(forKey: forKey)
+        suite.data(forKey: forKey)
     }
 
     public func setValue(_ data: Data?, forKey: String) {
-        UserDefaults.standard.set(data, forKey: forKey)
+        suite.set(data, forKey: forKey)
         valueUpdatePublisher.send((forKey, data))
+
+        #if DEBUG
+            if printValueChange {
+                var objectText = String(describing: data)
+                if let text = String(data: data ?? .init(), encoding: .utf8)?
+                    .trimmingCharacters(in: .whitespacesAndNewlines),
+                    !text.isEmpty
+                { objectText = text }
+                // if is a json object, format it
+                if let json = try? JSONSerialization.jsonObject(with: data ?? .init(), options: []),
+                   let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
+                   let jsonText = String(data: jsonData, encoding: .utf8)?
+                   .trimmingCharacters(in: .whitespacesAndNewlines),
+                   !jsonText.isEmpty
+                { objectText = jsonText }
+                print("[ConfiguableKit] set value for key: \(forKey) with object: \(objectText)")
+            }
+        #endif
     }
+
+    #if DEBUG
+        private var printValueChange: Bool { Self.printValueChange }
+        private static var printValueChange: Bool = false
+        public static func printEveryValueChange() {
+            printValueChange = true
+        }
+    #endif
 
     public static var valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> = .init()
 }
