@@ -8,8 +8,8 @@
 import UIKit
 
 open class ListAnnotation: ConfigurableObject.AnnotationProtocol {
-    let selections: [ValueItem]
-    init(selections: [ValueItem]) {
+    let selections: () -> [ListAnnotation.ValueItem]
+    init(selections: @escaping (() -> [ListAnnotation.ValueItem])) {
         self.selections = selections
     }
 

@@ -15,7 +15,7 @@ public extension ConfigurableObject {
         case submenu(children: () -> [ConfigurableObject])
 
         case boolean
-        case list(selections: [ListAnnotation.ValueItem])
+        case list(selections: () -> [ListAnnotation.ValueItem])
         case page(viewController: () -> (UIViewController))
         case action(handler: (UIViewController?) -> Void)
 

@@ -23,7 +23,7 @@ class ViewController: UIViewController {
                     explain: NSLocalizedString("Select the color theme.", comment: ""),
                     key: "theme",
                     defaultValue: InterfaceStyle.system.rawValue,
-                    annotation: .list(selections: [
+                    annotation: .list { [
                         .init(
                             icon: "circle.righthalf.fill",
                             title: NSLocalizedString("System", comment: ""),
@@ -42,7 +42,7 @@ class ViewController: UIViewController {
                             section: NSLocalizedString("Override", comment: ""),
                             rawValue: InterfaceStyle.dark.rawValue
                         ),
-                    ])
+                    ] }
                 ),
                 ConfigurableObject(
                     icon: "plus",
@@ -97,14 +97,14 @@ class ViewController: UIViewController {
                     explain: "Choose value from a predefined list",
                     key: "wiki.qaq.test.menu",
                     defaultValue: "A",
-                    annotation: .list(selections: [
+                    annotation: .list { [
                         .init(icon: "1.circle", title: "Select Value 1", section: "Number Values", rawValue: "1"),
                         .init(icon: "2.circle", title: "Select Value 2", section: "Number Values", rawValue: "2"),
                         .init(icon: "3.circle", title: "Select Value 3", section: "Number Values", rawValue: "3"),
                         .init(icon: "a.circle", title: "Select Value A", section: "Text Values", rawValue: "A"),
                         .init(icon: "b.circle", title: "Select Value B", section: "Text Values", rawValue: "B"),
                         .init(icon: "c.circle", title: "Select Value C", section: "Text Values", rawValue: "C"),
-                    ])
+                    ] }
                 ),
                 ConfigurableObject(
                     icon: "switch.2",
@@ -225,14 +225,14 @@ class ViewController: UIViewController {
                     explain: "This value is synchronized with Text List B",
                     key: "wiki.qaq.demo.sync.text.2",
                     defaultValue: "Happy",
-                    annotation: .list(selections: [
+                    annotation: .list { [
                         .init(title: "Happy", rawValue: "Happy"),
                         .init(title: "Sad", rawValue: "Sad"),
                         .init(title: "Angry", rawValue: "Angry"),
                         .init(title: "Excited", rawValue: "Excited"),
                         .init(title: "Surprised", rawValue: "Surprised"),
                         .init(title: "Confused", rawValue: "Confused"),
-                    ])
+                    ] }
                 ),
                 ConfigurableObject(
                     icon: "b.circle",
@@ -240,14 +240,14 @@ class ViewController: UIViewController {
                     explain: "This value is synchronized with Text List A",
                     key: "wiki.qaq.demo.sync.text.2",
                     defaultValue: "Happy",
-                    annotation: .list(selections: [
+                    annotation: .list { [
                         .init(title: "Happy", rawValue: "Happy"),
                         .init(title: "Sad", rawValue: "Sad"),
                         .init(title: "Angry", rawValue: "Angry"),
                         .init(title: "Excited", rawValue: "Excited"),
                         .init(title: "Surprised", rawValue: "Surprised"),
                         .init(title: "Confused", rawValue: "Confused"),
-                    ])
+                    ] }
                 ),
             ] }
         ),

@@ -34,12 +34,12 @@ public enum ConfigurableKit {
     public static func value<T: Codable>(
         forKey key: String,
         defaultValue: T,
-        storage: KeyValueStorage
+        storage: KeyValueStorage = storage
     ) -> T {
         value(forKey: key, storage: storage) ?? defaultValue
     }
 
-    public static func value<T: Codable>(forKey key: String, storage: KeyValueStorage) -> T? {
+    public static func value<T: Codable>(forKey key: String, storage: KeyValueStorage = storage) -> T? {
         let data = storage.value(forKey: key) ?? .init()
         let currentValue: T? = try? CodableStorage.decode(data: data)?.decodingValue()
         return currentValue

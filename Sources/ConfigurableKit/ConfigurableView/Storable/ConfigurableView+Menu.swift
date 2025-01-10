@@ -11,18 +11,34 @@ import UIKit
 
 class ConfigurableMenuView: ConfigurableValueView {
     var button: EasyHitButton { contentView as! EasyHitButton }
-    let selection: [ListAnnotation.ValueItem]
+    let selection: () -> [ListAnnotation.ValueItem]
 
-    public init(storage: CodableStorage, selection: [ListAnnotation.ValueItem]) {
+    public init(storage: CodableStorage, selection: @escaping () -> [ListAnnotation.ValueItem]) {
         self.selection = selection
         super.init(storage: storage)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.contentHorizontalAlignment = .trailing
 
-        if !selection.isEmpty {
-            button.showsMenuAsPrimaryAction = true
-            button.menu = buildMenuWithSelection(selection)
-        }
+        button.showsMenuAsPrimaryAction = true
+        button.menu = .init(
+            options: [.singleSelection, .displayInline],
+            children: [
+                UIDeferredMenuElement.uncached { [weak self] provider in
+                    guard let self else {
+                        provider([
+                            UIAction(
+                                title: NSLocalizedString("Menu Not Available", comment: ""),
+                                attributes: [.disabled]
+                            ) { _ in },
+                        ])
+                        return
+                    }
+                    let selections = selection()
+                    let item = buildMenuWithSelection(selections)
+                    provider(item)
+                },
+            ]
+        )
     }
 
     override class func createContentView() -> UIView {
@@ -43,6 +59,8 @@ class ConfigurableMenuView: ConfigurableValueView {
     }
 
     func executeUpdateValue(_ value: ConfigurableKitAnyCodable) {
+        let selection = selection()
+
         var text: String = value.decodingValue(defaultValue: String(describing: value))
         for item in selection where item.rawValue == value {
             text = item.title
@@ -71,65 +89,46 @@ class ConfigurableMenuView: ConfigurableValueView {
 }
 
 extension ConfigurableMenuView {
-    func buildMenuWithSelection(_ selection: [ListAnnotation.ValueItem]) -> UIMenu {
+    func buildMenuWithSelection(_ selection: [ListAnnotation.ValueItem]) -> [UIMenuElement] {
         let groupedselection: OrderedDictionary<String, [ListAnnotation.ValueItem]>
         groupedselection = selection.reduce(into: [:]) { result, item in
             result[item.section, default: []].append(item)
         }
-        if groupedselection.keys.count <= 1 {
-            return .init(
-                options: .singleSelection,
-                children: selection.map { buildMenuItemWithSelectionItem($0) }
-            )
-        } else if selection.count <= 10 {
-            return .init(
-                options: .singleSelection,
-                children: groupedselection.map { section, items in
-                    UIMenu(
-                        title: section,
-                        options: .displayInline,
-                        children: items.map { buildMenuItemWithSelectionItem($0) }
-                    )
-                }
-            )
-        } else {
-            return .init(
-                options: .singleSelection,
-                children: groupedselection.map { section, items in
-                    UIMenu(
-                        title: section,
-                        options: section.isEmpty ? [.displayInline] : [],
-                        children: items.map { buildMenuItemWithSelectionItem($0) }
-                    )
-                }
+        // if section is all empty, return UIActions directly
+        if groupedselection.keys.allSatisfy(\.isEmpty) {
+            return groupedselection.values.flatMap {
+                $0.map { buildMenuItemWithSelectionItem($0) }
+            }
+        }
+
+        return groupedselection.map { section, items in
+            UIMenu(
+                title: section,
+                options: [.displayInline],
+                children: items.map { buildMenuItemWithSelectionItem($0) }
             )
         }
     }
 
     func buildMenuItemWithSelectionItem(_ selectionItem: ListAnnotation.ValueItem) -> UIMenuElement {
-        UIDeferredMenuElement.uncached { [weak self] completion in
-            let icon: UIImage? = if selectionItem.icon.isEmpty {
-                nil
-            } else if selectionItem.icon.hasPrefix("#") {
-                UIImage(named: String(selectionItem.icon.dropFirst()))
-            } else {
-                UIImage(systemName: selectionItem.icon)
-            }
-
-            let action = UIAction(
-                title: selectionItem.title,
-                image: icon
-            ) { [weak self] _ in
-                self?.value = selectionItem.rawValue
-            }
-
-            if selectionItem.rawValue == self?.value {
-                action.state = .on
-            } else {
-                action.state = .off
-            }
-
-            completion([action])
+        let icon: UIImage? = if selectionItem.icon.isEmpty {
+            nil
+        } else if selectionItem.icon.hasPrefix("#") {
+            UIImage(named: String(selectionItem.icon.dropFirst()))
+        } else {
+            UIImage(systemName: selectionItem.icon)
         }
+        let action = UIAction(
+            title: selectionItem.title,
+            image: icon
+        ) { [weak self] _ in
+            self?.value = selectionItem.rawValue
+        }
+        if selectionItem.rawValue == value {
+            action.state = .on
+        } else {
+            action.state = .off
+        }
+        return action
     }
 }
