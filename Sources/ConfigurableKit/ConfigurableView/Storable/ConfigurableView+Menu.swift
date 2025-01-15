@@ -22,22 +22,18 @@ class ConfigurableMenuView: ConfigurableValueView {
         button.showsMenuAsPrimaryAction = true
         button.menu = .init(
             options: [.singleSelection, .displayInline],
-            children: [
-                UIDeferredMenuElement.uncached { [weak self] provider in
-                    guard let self else {
-                        provider([
-                            UIAction(
-                                title: NSLocalizedString("Menu Not Available", comment: ""),
-                                attributes: [.disabled]
-                            ) { _ in },
-                        ])
-                        return
-                    }
-                    let selections = selection()
-                    let item = buildMenuWithSelection(selections)
-                    provider(item)
-                },
-            ]
+            children: [UIDeferredMenuElement.uncached { [weak self] provider in
+                guard let self else {
+                    provider([UIAction(
+                        title: NSLocalizedString("Menu Not Available", comment: ""),
+                        attributes: [.disabled]
+                    ) { _ in }])
+                    return
+                }
+                let selections = selection()
+                let item = buildMenuWithSelection(selections)
+                provider(item)
+            }]
         )
     }
 
@@ -92,7 +88,9 @@ extension ConfigurableMenuView {
     func buildMenuWithSelection(_ selection: [ListAnnotation.ValueItem]) -> [UIMenuElement] {
         let groupedselection: OrderedDictionary<String, [ListAnnotation.ValueItem]>
         groupedselection = selection.reduce(into: [:]) { result, item in
-            result[item.section, default: []].append(item)
+            var section = item.section
+            if section.isEmpty { section = NSLocalizedString("Ungrouped", comment: "") }
+            return result[section, default: []].append(item)
         }
         // if section is all empty, return UIActions directly
         if groupedselection.keys.allSatisfy(\.isEmpty) {
@@ -101,10 +99,15 @@ extension ConfigurableMenuView {
             }
         }
 
+        var displayOptions: UIMenu.Options = []
+        if selection.count <= 10 || groupedselection.keys.count == 1 {
+            displayOptions.insert(.displayInline)
+        }
+
         return groupedselection.map { section, items in
             UIMenu(
                 title: section,
-                options: [.displayInline],
+                options: displayOptions,
                 children: items.map { buildMenuItemWithSelectionItem($0) }
             )
         }

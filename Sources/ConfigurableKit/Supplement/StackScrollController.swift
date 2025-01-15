@@ -15,6 +15,8 @@ open class StackScrollController: UIViewController {
     override open func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .systemBackground
+
         stackView.axis = .vertical
         stackView.spacing = 0
         stackView.distribution = .equalSpacing
