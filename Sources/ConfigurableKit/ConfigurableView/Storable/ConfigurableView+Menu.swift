@@ -88,9 +88,7 @@ extension ConfigurableMenuView {
     func buildMenuWithSelection(_ selection: [ListAnnotation.ValueItem]) -> [UIMenuElement] {
         let groupedselection: OrderedDictionary<String, [ListAnnotation.ValueItem]>
         groupedselection = selection.reduce(into: [:]) { result, item in
-            var section = item.section
-            if section.isEmpty { section = NSLocalizedString("Ungrouped", comment: "") }
-            return result[section, default: []].append(item)
+            result[item.section, default: []].append(item)
         }
         // if section is all empty, return UIActions directly
         if groupedselection.keys.allSatisfy(\.isEmpty) {
@@ -105,9 +103,11 @@ extension ConfigurableMenuView {
         }
 
         return groupedselection.map { section, items in
-            UIMenu(
+            var options = displayOptions
+            if section.isEmpty { options.insert(.displayInline) }
+            return UIMenu(
                 title: section,
-                options: displayOptions,
+                options: options,
                 children: items.map { buildMenuItemWithSelectionItem($0) }
             )
         }
