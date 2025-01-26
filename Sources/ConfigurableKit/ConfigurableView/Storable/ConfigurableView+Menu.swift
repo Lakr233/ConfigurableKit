@@ -9,8 +9,8 @@ import Combine
 import OrderedCollections
 import UIKit
 
-class ConfigurableMenuView: ConfigurableValueView {
-    var button: EasyHitButton { contentView as! EasyHitButton }
+open class ConfigurableMenuView: ConfigurableValueView {
+    open var button: EasyHitButton { contentView as! EasyHitButton }
     let selection: () -> [ListAnnotation.ValueItem]
 
     public init(storage: CodableStorage, selection: @escaping () -> [ListAnnotation.ValueItem]) {
@@ -31,17 +31,17 @@ class ConfigurableMenuView: ConfigurableValueView {
                     return
                 }
                 let selections = selection()
-                let item = buildMenuWithSelection(selections)
+                let item = menuWithSelection(selections)
                 provider(item)
             }]
         )
     }
 
-    override class func createContentView() -> UIView {
+    override open class func createContentView() -> UIView {
         EasyHitButton()
     }
 
-    override func updateValue() {
+    override open func updateValue() {
         super.updateValue()
         let value = value
         UIView.transition(
@@ -54,7 +54,7 @@ class ConfigurableMenuView: ConfigurableValueView {
         }
     }
 
-    func executeUpdateValue(_ value: ConfigurableKitAnyCodable) {
+    open func executeUpdateValue(_ value: ConfigurableKitAnyCodable) {
         let selection = selection()
 
         var text: String = value.decodingValue(defaultValue: String(describing: value))
@@ -82,10 +82,8 @@ class ConfigurableMenuView: ConfigurableValueView {
         button.setAttributedTitle(pressedAttrString, for: .disabled)
         button.setAttributedTitle(pressedAttrString, for: .selected)
     }
-}
 
-extension ConfigurableMenuView {
-    func buildMenuWithSelection(_ selection: [ListAnnotation.ValueItem]) -> [UIMenuElement] {
+    open func menuWithSelection(_ selection: [ListAnnotation.ValueItem]) -> [UIMenuElement] {
         let groupedselection: OrderedDictionary<String, [ListAnnotation.ValueItem]>
         groupedselection = selection.reduce(into: [:]) { result, item in
             result[item.section, default: []].append(item)
@@ -93,7 +91,7 @@ extension ConfigurableMenuView {
         // if section is all empty, return UIActions directly
         if groupedselection.keys.allSatisfy(\.isEmpty) {
             return groupedselection.values.flatMap {
-                $0.map { buildMenuItemWithSelectionItem($0) }
+                $0.map { menuItemWithSelection($0) }
             }
         }
 
@@ -108,12 +106,12 @@ extension ConfigurableMenuView {
             return UIMenu(
                 title: section,
                 options: options,
-                children: items.map { buildMenuItemWithSelectionItem($0) }
+                children: items.map { menuItemWithSelection($0) }
             )
         }
     }
 
-    func buildMenuItemWithSelectionItem(_ selectionItem: ListAnnotation.ValueItem) -> UIMenuElement {
+    open func menuItemWithSelection(_ selectionItem: ListAnnotation.ValueItem) -> UIMenuElement {
         let icon: UIImage? = if selectionItem.icon.isEmpty {
             nil
         } else if selectionItem.icon.hasPrefix("#") {

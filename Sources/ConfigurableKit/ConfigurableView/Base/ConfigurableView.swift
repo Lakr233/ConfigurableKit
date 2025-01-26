@@ -11,7 +11,7 @@ import UIKit
 let elementSpacing: CGFloat = 10
 
 open class ConfigurableView: UIStackView {
-    lazy var headerStackView = UIStackView()
+    open lazy var headerStackView = UIStackView()
 
     open lazy var iconContainer = UIView()
     open lazy var iconView = UIImageView()
@@ -19,11 +19,11 @@ open class ConfigurableView: UIStackView {
 
     open lazy var verticalStack = UIStackView()
     open lazy var descriptionLabel = UILabel()
-    lazy var contentContainer = EasyHitView()
+    open lazy var contentContainer = EasyHitView()
 
-    public lazy var contentView = Self.createContentView()
+    open lazy var contentView = Self.createContentView()
 
-    public var cancellables = Set<AnyCancellable>()
+    open var cancellables = Set<AnyCancellable>()
 
     public init() {
         super.init(frame: .zero)
@@ -35,7 +35,7 @@ open class ConfigurableView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func commitInit() {
+    open func commitInit() {
         translatesAutoresizingMaskIntoConstraints = false
         iconContainer.translatesAutoresizingMaskIntoConstraints = false
         iconView.translatesAutoresizingMaskIntoConstraints = false

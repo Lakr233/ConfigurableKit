@@ -11,7 +11,7 @@ import UIKit
 open class ConfigurableLinkView: ConfigurableView {
     let url: URL
 
-    var button: EasyHitButton { contentView as! EasyHitButton }
+    open var button: EasyHitButton { contentView as! EasyHitButton }
 
     public init(buttonTitle: String, url: URL) {
         self.url = url
@@ -49,7 +49,7 @@ open class ConfigurableLinkView: ConfigurableView {
         EasyHitButton()
     }
 
-    @objc func openURL() {
+    @objc open func openURL() {
         UIApplication.shared.open(url)
     }
 }

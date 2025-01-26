@@ -8,7 +8,7 @@
 import UIKit
 
 open class ConfigurableShareLinkView: ConfigurableLinkView {
-    @objc override func openURL() {
+    @objc override open func openURL() {
         let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = self
         if let viewController = parentViewController {

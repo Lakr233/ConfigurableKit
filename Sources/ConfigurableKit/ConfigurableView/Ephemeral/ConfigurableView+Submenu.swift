@@ -21,7 +21,7 @@ open class ConfigurableSubmenuView: ConfigurableActionView {
         }
     }
 
-    override class func configure(imageView: UIImageView) {
+    override open class func configure(imageView: UIImageView) {
         imageView.image = .init(systemName: "chevron.right", withConfiguration: .largeIcon)?
             .withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .secondaryLabel

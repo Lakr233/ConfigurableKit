@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 open class ConfigurableValueView: ConfigurableView {
-    @CodableStorage public var value: ConfigurableKitAnyCodable
+    @CodableStorage open var value: ConfigurableKitAnyCodable
 
     public init(storage: CodableStorage) {
         _value = .init(

@@ -7,10 +7,10 @@
 
 import UIKit
 
-class EasyHitView: UIView {
-    var easyHitInsets: UIEdgeInsets = .init(top: -16, left: -16, bottom: -16, right: -16)
+open class EasyHitView: UIView {
+    open var easyHitInsets: UIEdgeInsets = .init(top: -16, left: -16, bottom: -16, right: -16)
 
-    override func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
+    override open func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
         bounds.inset(by: easyHitInsets).contains(point)
     }
 }

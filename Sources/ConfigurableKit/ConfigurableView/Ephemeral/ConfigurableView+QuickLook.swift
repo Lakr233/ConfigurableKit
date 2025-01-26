@@ -9,7 +9,7 @@ import QuickLook
 import UIKit
 
 open class ConfigurableQuickLookView: ConfigurableLinkView, QLPreviewControllerDataSource {
-    @objc override func openURL() {
+    @objc override open func openURL() {
         let previewController = QLPreviewController()
         previewController.dataSource = self
         if let viewController = parentViewController {
@@ -17,11 +17,11 @@ open class ConfigurableQuickLookView: ConfigurableLinkView, QLPreviewControllerD
         }
     }
 
-    public func numberOfPreviewItems(in _: QLPreviewController) -> Int {
+    open func numberOfPreviewItems(in _: QLPreviewController) -> Int {
         1
     }
 
-    public func previewController(_: QLPreviewController, previewItemAt _: Int) -> any QLPreviewItem {
+    open func previewController(_: QLPreviewController, previewItemAt _: Int) -> any QLPreviewItem {
         url as QLPreviewItem
     }
 }

@@ -8,10 +8,10 @@
 import Combine
 import UIKit
 
-class ConfigurableBooleanView: ConfigurableValueView {
-    var switchView: UISwitch { contentView as! UISwitch }
+open class ConfigurableBooleanView: ConfigurableValueView {
+    open var switchView: UISwitch { contentView as! UISwitch }
 
-    var boolValue: Bool {
+    open var boolValue: Bool {
         get { value.decodingValue(defaultValue: false) }
         set { value = .init(newValue) }
     }
@@ -23,16 +23,16 @@ class ConfigurableBooleanView: ConfigurableValueView {
         switchView.addTarget(self, action: #selector(valueChanged), for: .valueChanged)
     }
 
-    override class func createContentView() -> UIView {
+    override open class func createContentView() -> UIView {
         UISwitch()
     }
 
-    override func updateValue() {
+    override open func updateValue() {
         super.updateValue()
         switchView.setOn(boolValue, animated: true)
     }
 
-    @objc func valueChanged() {
+    @objc open func valueChanged() {
         value = .init(switchView.isOn)
     }
 }
