@@ -20,10 +20,10 @@ open class ListAnnotation: ConfigurableObject.AnnotationProtocol {
 
 public extension ListAnnotation {
     struct ValueItem: Codable {
-        let icon: String
-        let title: String
-        let section: String
-        let rawValue: ConfigurableKitAnyCodable // used for callback
+        public let icon: String
+        public let title: String
+        public let section: String
+        public let rawValue: ConfigurableKitAnyCodable // used for callback
 
         public init(
             icon: String = "",

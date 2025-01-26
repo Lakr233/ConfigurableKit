@@ -8,10 +8,10 @@
 import UIKit
 
 open class OpenLinkAnnotation: ConfigurableObject.AnnotationProtocol {
-    let title: String
-    let url: URL
+    public let title: String
+    public let url: URL
 
-    init(title: String, url: URL) {
+    public init(title: String, url: URL) {
         self.title = title
         self.url = url
     }

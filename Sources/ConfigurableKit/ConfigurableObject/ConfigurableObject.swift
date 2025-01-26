@@ -16,20 +16,20 @@ enum ReservedKeys: String {
 }
 
 open class ConfigurableObject {
-    let icon: String
-    let title: String
-    let explain: String
+    public let icon: String
+    public let title: String
+    public let explain: String
 
-    let key: String
-    let annotation: AnyAnnotation
+    public let key: String
+    public let annotation: AnyAnnotation
 
-    let availabilityRequirement: AvailabilityRequirement?
+    public let availabilityRequirement: AvailabilityRequirement?
 
     @CodableStorage var value: ConfigurableKitAnyCodable
     public var __value: CodableStorage { _value }
 
-    let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
-    var cancellable: Set<AnyCancellable> = []
+    public let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
+    public var cancellable: Set<AnyCancellable> = []
 
     public init(
         icon: String,
