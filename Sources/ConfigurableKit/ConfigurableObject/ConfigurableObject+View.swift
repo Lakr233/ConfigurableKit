@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension ConfigurableObject {
+public extension ConfigurableObject {
     func createView() -> UIView? {
         let view = annotation.createView(fromObject: self)
         view.configure(icon: .image(optionalName: icon))
@@ -29,7 +29,7 @@ extension ConfigurableObject {
     }
 }
 
-extension UIImage {
+public extension UIImage {
     static func image(optionalName: String) -> UIImage? {
         var image: UIImage?
         if image == nil { image = .init(systemName: optionalName) }
