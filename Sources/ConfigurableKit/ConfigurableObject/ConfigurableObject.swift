@@ -208,3 +208,9 @@ public extension ConfigurableObject {
         )
     }
 }
+
+public extension ConfigurableObject {
+    func createView() -> UIView {
+        annotation.createView(fromObject: self)
+    }
+}
