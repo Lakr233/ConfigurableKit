@@ -13,6 +13,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var cancellables = Set<AnyCancellable>()
 
+    @BareCodableStorage(key: "Test.BareCodableStorage", defaultValue: false)
+    var testBareCodableStorage: Bool
+
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -25,6 +28,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         #endif
         windowScene.sizeRestrictions?.minimumSize = CGSize(width: 1024, height: 768)
+
+        testBareCodableStorage = true
+        assert(testBareCodableStorage)
+        testBareCodableStorage = false
+        assert(!testBareCodableStorage)
 
         ConfigurableKit.publisher(forKey: "theme", type: String.self)
             .sink { [weak self] input in

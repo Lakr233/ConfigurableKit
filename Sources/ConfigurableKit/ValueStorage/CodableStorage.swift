@@ -33,3 +33,32 @@ public struct CodableStorage {
         }
     }
 }
+
+@propertyWrapper
+public struct BareCodableStorage<T: Codable> {
+    public let key: String
+    public let defaultValue: T
+    public var storage: KeyValueStorage
+
+    public init(key: String, defaultValue: T, storage: KeyValueStorage) {
+        self.key = key
+        self.defaultValue = defaultValue
+        self.storage = storage
+    }
+
+    public var wrappedValue: T {
+        get {
+            let object = CodableStorage.read(key: key, storage: storage) ?? .init()
+            return object.decodingValue(defaultValue: defaultValue)
+        }
+        set {
+            CodableStorage.write(.init(newValue), forKey: key, storage: storage)
+        }
+    }
+}
+
+public extension BareCodableStorage {
+    init(key: String, defaultValue: T) {
+        self.init(key: key, defaultValue: defaultValue, storage: ConfigurableKit.storage)
+    }
+}
