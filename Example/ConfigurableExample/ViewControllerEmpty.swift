@@ -52,11 +52,11 @@ class ViewControllerEmpty: StackScrollController {
         let demo = ConfigurableActionView()
         demo.configure(icon: .image(optionalName: "star.fill"))
         demo.configure(title: "Demo")
-        demo.configure(description: "This is a demo view")
+        demo.configure(description: "Duis magna sit consectetur enim aute. Consectetur nulla sint id nulla aliqua et id anim irure laborum. Dolor amet enim sint elit exercitation irure minim in qui sunt laboris eiusmod dolor. Velit officia voluptate voluptate minim veniam pariatur dolore sit consectetur dolor aliquip. Deserunt aliquip ea consectetur labore ut aliqua id do cillum enim nulla. Cillum irure enim ipsum dolor duis id culpa amet Lorem. Fugiat sint nostrud aliquip enim ipsum velit elit officia irure enim enim occaecat. Sint veniam id ea ut quis Lorem cillum laborum.")
         stackView.addArrangedSubview(SeparatorView())
         stackView.addArrangedSubviewWithMargin(demo)
         stackView.addArrangedSubview(SeparatorView())
-        let footer = ConfigurableSectionFooterView().with(footer: "Hello World")
+        let footer = ConfigurableSectionFooterView().with(footer: "Duis magna sit consectetur enim aute. Consectetur nulla sint id nulla aliqua et id anim irure laborum. Dolor amet enim sint elit exercitation irure minim in qui sunt laboris eiusmod dolor. Velit officia voluptate voluptate minim veniam pariatur dolore sit consectetur dolor aliquip. Deserunt aliquip ea consectetur labore ut aliqua id do cillum enim nulla. Cillum irure enim ipsum dolor duis id culpa amet Lorem. Fugiat sint nostrud aliquip enim ipsum velit elit officia irure enim enim occaecat. Sint veniam id ea ut quis Lorem cillum laborum.")
         stackView.addArrangedSubviewWithMargin(footer) { margin in
             margin.top /= 2
         }
