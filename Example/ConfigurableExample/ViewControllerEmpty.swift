@@ -47,7 +47,7 @@ class ViewControllerEmpty: StackScrollController {
 
         let header = ConfigurableSectionHeaderView().with(header: "Hello World")
         stackView.addArrangedSubviewWithMargin(header) { margin in
-            margin.bottom = 0
+            margin.bottom /= 2
         }
         let demo = ConfigurableActionView()
         demo.configure(icon: .image(optionalName: "star.fill"))
@@ -56,5 +56,9 @@ class ViewControllerEmpty: StackScrollController {
         stackView.addArrangedSubview(SeparatorView())
         stackView.addArrangedSubviewWithMargin(demo)
         stackView.addArrangedSubview(SeparatorView())
+        let footer = ConfigurableSectionFooterView().with(footer: "Hello World")
+        stackView.addArrangedSubviewWithMargin(footer) { margin in
+            margin.top /= 2
+        }
     }
 }

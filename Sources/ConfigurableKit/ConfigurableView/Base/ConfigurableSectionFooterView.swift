@@ -7,7 +7,7 @@
 
 import UIKit
 
-open class ConfigurableSectionHeaderView: ConfigurableView {
+open class ConfigurableSectionFooterView: ConfigurableView {
     override open func commitInit() {
         super.commitInit()
         iconView.removeFromSuperview()
@@ -16,11 +16,12 @@ open class ConfigurableSectionHeaderView: ConfigurableView {
         descriptionLabel.removeFromSuperview()
         titleLabel.font = .preferredFont(forTextStyle: .footnote)
         titleLabel.numberOfLines = 0
+        alpha = 0.5
     }
 
     @discardableResult
-    open func with(header: String) -> Self {
-        titleLabel.text = header
+    open func with(footer: String) -> Self {
+        titleLabel.text = footer
         return self
     }
 
