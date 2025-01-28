@@ -6,10 +6,11 @@
 //
 
 import ColorfulX
+import ConfigurableKit
 import UIKit
 
 @objc(ViewControllerEmpty)
-class ViewControllerEmpty: UIViewController {
+class ViewControllerEmpty: StackScrollController {
     let colorful = AnimatedMulticolorGradientView()
 
     init() {
@@ -30,8 +31,30 @@ class ViewControllerEmpty: UIViewController {
         view.addSubview(colorful)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        view.sendSubviewToBack(colorful)
+    }
+
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         colorful.frame = view.bounds
+    }
+
+    override func setupContentViews() {
+        super.setupContentViews()
+
+        let header = ConfigurableSectionHeaderView().with(header: "Hello World")
+        stackView.addArrangedSubviewWithMargin(header) { margin in
+            margin.bottom = 0
+        }
+        let demo = ConfigurableActionView()
+        demo.configure(icon: .image(optionalName: "star.fill"))
+        demo.configure(title: "Demo")
+        demo.configure(description: "This is a demo view")
+        stackView.addArrangedSubview(SeparatorView())
+        stackView.addArrangedSubviewWithMargin(demo)
+        stackView.addArrangedSubview(SeparatorView())
     }
 }
