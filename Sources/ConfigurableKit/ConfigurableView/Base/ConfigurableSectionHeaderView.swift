@@ -15,7 +15,7 @@ open class ConfigurableSectionHeaderView: ConfigurableView {
         contentContainer.removeFromSuperview()
         descriptionLabel.removeFromSuperview()
         contentView.removeFromSuperview()
-        titleLabel.font = .preferredFont(forTextStyle: .footnote)
+        titleLabel.font = .preferredFont(forTextStyle: .footnote).semibold
         titleLabel.numberOfLines = 0
     }
 
