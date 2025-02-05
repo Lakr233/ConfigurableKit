@@ -63,7 +63,7 @@ open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate
     }
 
     open class func configure(imageView: UIImageView) {
-        imageView.image = .init(systemName: "chevron.right", withConfiguration: .largeIcon)?
+        imageView.image = .init(systemName: "arrow.right.circle.fill", withConfiguration: .largeIcon)?
             .withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .accent
     }
