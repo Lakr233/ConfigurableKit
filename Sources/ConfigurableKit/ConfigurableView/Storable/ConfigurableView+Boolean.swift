@@ -16,7 +16,7 @@ open class ConfigurableBooleanView: ConfigurableValueView {
         set { value = .init(newValue) }
     }
 
-    override init(storage: CodableStorage) {
+    override public init(storage: CodableStorage) {
         super.init(storage: storage)
 
         switchView.onTintColor = .accent
