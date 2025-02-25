@@ -17,7 +17,7 @@ open class ConfigurableSectionFooterView: ConfigurableView {
         contentView.removeFromSuperview()
         titleLabel.font = .preferredFont(forTextStyle: .footnote)
         titleLabel.numberOfLines = 0
-        alpha = 0.5
+        titleLabel.textColor = .secondaryLabel
     }
 
     @discardableResult
