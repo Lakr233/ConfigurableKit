@@ -31,7 +31,7 @@ class ViewController: UIViewController {
                             rawValue: InterfaceStyle.system.rawValue
                         ),
                         .init(
-                            icon: "sun",
+                            icon: "sun.min",
                             title: NSLocalizedString("Light", comment: ""),
                             section: NSLocalizedString("Override", comment: ""),
                             rawValue: InterfaceStyle.light.rawValue

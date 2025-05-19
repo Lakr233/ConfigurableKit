@@ -8,6 +8,7 @@ The simple but yet powerful way to build settings page.
 
 We have a fully working demo to show how to use this library. You can find it in the Example folder. Just click and run.
 
+- [x] iOS 13.0+ & macCatalyst 13.0+ support.
 - [x] Simple setup: define what you want and we handle the rest.
 - [x] Ultra fast written in Swift and UIKit. (No SwiftUI)
 - [x] Rich value type support, including Codable.

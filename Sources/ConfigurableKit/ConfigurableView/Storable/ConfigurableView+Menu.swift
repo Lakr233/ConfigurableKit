@@ -5,6 +5,7 @@
 //  Created by 82Flex on 2024/9/14.
 //
 
+import ChidoriMenu
 import Combine
 import OrderedCollections
 import UIKit
@@ -12,29 +13,20 @@ import UIKit
 open class ConfigurableMenuView: ConfigurableValueView {
     open var button: EasyHitButton { contentView as! EasyHitButton }
     let selection: () -> [ListAnnotation.ValueItem]
+    var menu: UIMenu?
 
     public init(storage: CodableStorage, selection: @escaping () -> [ListAnnotation.ValueItem]) {
         self.selection = selection
         super.init(storage: storage)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.contentHorizontalAlignment = .trailing
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        rebuildMenu()
+    }
 
-        button.showsMenuAsPrimaryAction = true
-        button.menu = .init(
-            options: [.singleSelection, .displayInline],
-            children: [UIDeferredMenuElement.uncached { [weak self] provider in
-                guard let self else {
-                    provider([UIAction(
-                        title: NSLocalizedString("Menu Not Available", comment: ""),
-                        attributes: [.disabled]
-                    ) { _ in }])
-                    return
-                }
-                let selections = selection()
-                let item = menuWithSelection(selections)
-                provider(item)
-            }]
-        )
+    @objc func buttonTapped() {
+        guard let menu else { return }
+        button.present(menu: menu)
     }
 
     override open class func createContentView() -> UIView {
@@ -81,6 +73,17 @@ open class ConfigurableMenuView: ConfigurableValueView {
         button.setAttributedTitle(pressedAttrString, for: .highlighted)
         button.setAttributedTitle(pressedAttrString, for: .disabled)
         button.setAttributedTitle(pressedAttrString, for: .selected)
+
+        rebuildMenu()
+    }
+
+    func rebuildMenu() {
+        let selections = selection()
+        let item = menuWithSelection(selections)
+        menu = .init(
+            options: [.displayInline],
+            children: item
+        )
     }
 
     open func menuWithSelection(_ selection: [ListAnnotation.ValueItem]) -> [UIMenuElement] {
