@@ -14,7 +14,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.1.4"),
-        .package(url: "https://github.com/Lakr233/ChidoriMenu", from: "3.0.0"),
+        .package(url: "https://github.com/Lakr233/ChidoriMenu", from: "4.0.0"),
     ],
     targets: [
         .target(name: "ConfigurableKit", dependencies: [
