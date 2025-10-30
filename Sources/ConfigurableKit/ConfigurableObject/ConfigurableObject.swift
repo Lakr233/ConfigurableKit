@@ -16,26 +16,25 @@ enum ReservedKeys: String {
 }
 
 open class ConfigurableObject {
-    nonisolated public let icon: String.LocalizationValue
-    nonisolated public let title: String.LocalizationValue
-    nonisolated public let explain: String.LocalizationValue
+    public nonisolated let icon: String
+    public nonisolated let title: String.LocalizationValue
+    public nonisolated let explain: String.LocalizationValue
 
-    nonisolated public let key: String
-    nonisolated public let annotation: AnyAnnotation
-    
-    nonisolated
-    public let availabilityRequirement: AvailabilityRequirement?
+    public nonisolated let key: String
+    public nonisolated let annotation: AnyAnnotation
+
+    public nonisolated let availabilityRequirement: AvailabilityRequirement?
 
     @CodableStorage
     var value: ConfigurableKitAnyCodable
-    nonisolated public var __value: CodableStorage { _value }
+    public nonisolated var __value: CodableStorage { _value }
 
-    nonisolated public let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
-    
-    nonisolated public var cancellable: Set<AnyCancellable> = []
+    public nonisolated let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
 
-    nonisolated public init(
-        icon: String.LocalizationValue,
+    public nonisolated var cancellable: Set<AnyCancellable> = []
+
+    public nonisolated init(
+        icon: String,
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
         key: String,
@@ -73,28 +72,24 @@ open class ConfigurableObject {
             .eraseToAnyPublisher()
     }
 
-    nonisolated
-    public func publisher<T: Codable>(forKey key: String, type _: T) -> AnyPublisher<T?, Never> {
+    public nonisolated func publisher<T: Codable>(forKey key: String, type _: T) -> AnyPublisher<T?, Never> {
         ConfigurableKit.publisher(forKey: key, type: T.self, storage: __value.storage)
     }
 
     @discardableResult
-    nonisolated
-    public func whenValueChanged(to newValue: @escaping (ConfigurableKitAnyCodable) -> Void) -> Self {
+    public nonisolated func whenValueChanged(to newValue: @escaping (ConfigurableKitAnyCodable) -> Void) -> Self {
         onChange.sink { newValue($0) }.store(in: &cancellable)
         return self
     }
 
     @discardableResult
-    nonisolated
-    public func whenValueChange<T: Codable>(type _: T.Type, to newValue: @escaping (T?) -> Void) -> Self {
+    public nonisolated func whenValueChange<T: Codable>(type _: T.Type, to newValue: @escaping (T?) -> Void) -> Self {
         onChange.sink { newValue(try? $0.decodingValue()) }.store(in: &cancellable)
         return self
     }
 
     @discardableResult
-    nonisolated
-    public func whenValueChange<T: Equatable & Codable>(type _: T.Type, to newValue: @escaping (T?) -> T?) -> Self {
+    public nonisolated func whenValueChange<T: Equatable & Codable>(type _: T.Type, to newValue: @escaping (T?) -> T?) -> Self {
         onChange.sink { [weak self] input in
             let typedInput: T? = try? input.decodingValue()
             let overwrite = newValue(typedInput)
@@ -105,10 +100,9 @@ open class ConfigurableObject {
     }
 }
 
-nonisolated
-public extension ConfigurableObject {
+public nonisolated extension ConfigurableObject {
     convenience init(
-        icon: String.LocalizationValue,
+        icon: String,
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
         key: String,
@@ -130,7 +124,7 @@ public extension ConfigurableObject {
     }
 
     convenience init(
-        icon: String.LocalizationValue,
+        icon: String,
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
         key: String,
@@ -152,7 +146,7 @@ public extension ConfigurableObject {
     }
 
     convenience init(
-        icon: String.LocalizationValue,
+        icon: String,
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
         key: String,
@@ -174,7 +168,7 @@ public extension ConfigurableObject {
     }
 
     convenience init(
-        icon: String.LocalizationValue,
+        icon: String,
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
         ephemeralAnnotation: AnyAnnotation,
@@ -193,7 +187,7 @@ public extension ConfigurableObject {
     }
 
     convenience init(
-        icon: String.LocalizationValue,
+        icon: String,
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
         ephemeralAnnotation: Annotation,
