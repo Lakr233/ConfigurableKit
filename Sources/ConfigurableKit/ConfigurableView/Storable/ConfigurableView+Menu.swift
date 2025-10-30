@@ -5,7 +5,6 @@
 //  Created by 82Flex on 2024/9/14.
 //
 
-import ChidoriMenu
 import Combine
 import OrderedCollections
 import UIKit
@@ -13,20 +12,14 @@ import UIKit
 open class ConfigurableMenuView: ConfigurableValueView {
     open var button: EasyHitButton { contentView as! EasyHitButton }
     let selection: () -> [ListAnnotation.ValueItem]
-    var menu: UIMenu?
 
     public init(storage: CodableStorage, selection: @escaping () -> [ListAnnotation.ValueItem]) {
         self.selection = selection
         super.init(storage: storage)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.contentHorizontalAlignment = .trailing
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        button.showsMenuAsPrimaryAction = true
         rebuildMenu()
-    }
-
-    @objc func buttonTapped() {
-        guard let menu else { return }
-        button.present(menu: menu)
     }
 
     override open class func createContentView() -> UIView {
@@ -80,7 +73,7 @@ open class ConfigurableMenuView: ConfigurableValueView {
     func rebuildMenu() {
         let selections = selection()
         let item = menuWithSelection(selections)
-        menu = .init(
+        button.menu = .init(
             options: [.displayInline],
             children: item
         )

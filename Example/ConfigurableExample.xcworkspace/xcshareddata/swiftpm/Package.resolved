@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "chidorimenu",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Lakr233/ChidoriMenu",
-      "state" : {
-        "revision" : "3bb4323fe0f7f8f435d15656c3eeffcbb7c9c605",
-        "version" : "3.0.0"
-      }
-    },
-    {
       "identity" : "colorfulx",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Lakr233/ColorfulX",

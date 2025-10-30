@@ -6,20 +6,18 @@ import PackageDescription
 let package = Package(
     name: "ConfigurableKit",
     platforms: [
-        .iOS(.v13),
-        .macCatalyst(.v13),
+        .iOS(.v16),
+        .macCatalyst(.v16),
     ],
     products: [
         .library(name: "ConfigurableKit", targets: ["ConfigurableKit"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.1.4"),
-        .package(url: "https://github.com/Lakr233/ChidoriMenu", from: "4.0.0"),
     ],
     targets: [
         .target(name: "ConfigurableKit", dependencies: [
             .product(name: "OrderedCollections", package: "swift-collections"),
-            "ChidoriMenu",
         ]),
     ]
 )
