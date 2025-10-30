@@ -129,10 +129,20 @@ open class ConfigurableView: UIStackView {
         titleLabel.text = String(localized: title)
     }
 
+    open func configure(rawTitle: String) {
+        titleLabel.text = rawTitle
+    }
+
     open func configure(description: String.LocalizationValue) {
         titleLabel.accessibilityHint = String(localized: description)
         descriptionLabel.text = String(localized: description)
         descriptionLabel.isHidden = String(localized: description).isEmpty
+    }
+
+    open func configure(rawDescription: String) {
+        titleLabel.accessibilityHint = rawDescription
+        descriptionLabel.text = rawDescription
+        descriptionLabel.isHidden = rawDescription.isEmpty
     }
 
     open func subscribeToAvailability(_ publisher: AnyPublisher<Bool, Never>, initialValue: Bool) {
