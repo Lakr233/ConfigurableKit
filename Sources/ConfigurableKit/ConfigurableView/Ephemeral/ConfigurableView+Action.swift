@@ -32,8 +32,9 @@ open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate
         }
     }
 
-    public init(responseEverywhere: Bool = true, actionBlock: @escaping @MainActor ((UIViewController) async -> Void) = { _ in }) {
+    public init(responseEverywhere: Bool = true, actionBlock: @escaping (@Sendable (UIViewController) async -> Void) = { _ in }) {
         self.actionBlock = actionBlock
+
         super.init()
         contentView.contentMode = .scaleAspectFit
 

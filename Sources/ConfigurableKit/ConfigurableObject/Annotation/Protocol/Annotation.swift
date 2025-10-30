@@ -17,7 +17,7 @@ public extension ConfigurableObject {
         case boolean
         case list(selections: () -> [ListAnnotation.ValueItem])
         case page(viewController: () -> (UIViewController))
-        case action(handler: (UIViewController) -> Void)
+        case action(handler: @MainActor (UIViewController) async -> Void)
 
         case openLink(title: String.LocalizationValue, url: URL)
         case quickLook(title: String.LocalizationValue, url: URL)
