@@ -9,10 +9,12 @@ import UIKit
 
 open class ConfigurableShareLinkView: ConfigurableLinkView {
     @objc override open func openURL() {
+        guard let viewController = parentViewController else {
+            assertionFailure("ConfigurableShareLinkView requires a parent view controller to present share sheet")
+            return
+        }
         let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = self
-        if let viewController = parentViewController {
-            viewController.present(activityViewController, animated: true, completion: nil)
-        }
+        viewController.present(activityViewController, animated: true, completion: nil)
     }
 }

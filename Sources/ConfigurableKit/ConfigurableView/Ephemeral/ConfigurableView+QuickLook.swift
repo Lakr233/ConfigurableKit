@@ -10,11 +10,13 @@ import UIKit
 
 open class ConfigurableQuickLookView: ConfigurableLinkView, QLPreviewControllerDataSource {
     @objc override open func openURL() {
+        guard let viewController = parentViewController else {
+            assertionFailure("ConfigurableQuickLookView requires a parent view controller to present preview")
+            return
+        }
         let previewController = QLPreviewController()
         previewController.dataSource = self
-        if let viewController = parentViewController {
-            viewController.present(previewController, animated: true, completion: nil)
-        }
+        viewController.present(previewController, animated: true, completion: nil)
     }
 
     open func numberOfPreviewItems(in _: QLPreviewController) -> Int {

@@ -15,9 +15,13 @@ open class ConfigurablePageView: ConfigurableActionView {
 
         super.init(responseEverywhere: true)
         actionBlock = { [weak self] parentViewController in
+            guard let parentViewController else {
+                assertionFailure("ConfigurablePageView requires a parent view controller to navigate")
+                return
+            }
             guard let page = self?.page() else { return }
             page.title = self?.titleLabel.text
-            parentViewController?.navigationController?.pushViewController(page, animated: true)
+            parentViewController.navigationController?.pushViewController(page, animated: true)
         }
     }
 

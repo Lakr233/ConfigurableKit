@@ -8,9 +8,9 @@
 import UIKit
 
 open class ActionAnnotation: ConfigurableObject.AnnotationProtocol {
-    let handler: (UIViewController?) -> Void
+    let handler: (UIViewController) -> Void
 
-    public init(handler: @escaping (UIViewController?) -> Void) {
+    public init(handler: @escaping (UIViewController) -> Void) {
         self.handler = handler
     }
 

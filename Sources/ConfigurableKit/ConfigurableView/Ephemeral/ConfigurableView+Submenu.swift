@@ -16,9 +16,13 @@ open class ConfigurableSubmenuView: ConfigurableActionView {
 
         super.init(responseEverywhere: true)
         actionBlock = { [weak self] parentViewController in
+            guard let parentViewController else {
+                assertionFailure("ConfigurableSubmenuView requires a parent view controller to navigate")
+                return
+            }
             let titleValue: String.LocalizationValue? = self?.titleLabel.text.map { String.LocalizationValue(stringLiteral: $0) }
             let menu = ConfigurableViewController(manifest: .init(title: titleValue, list: childrenReader()))
-            parentViewController?.navigationController?.pushViewController(menu, animated: true)
+            parentViewController.navigationController?.pushViewController(menu, animated: true)
         }
     }
 

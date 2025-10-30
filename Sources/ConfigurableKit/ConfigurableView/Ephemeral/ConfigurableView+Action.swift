@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate {
-    open var actionBlock: (UIViewController?) -> Void
+    open var actionBlock: (UIViewController) -> Void
 
     open lazy var pressGesture: UILongPressGestureRecognizer = .init(
         target: self,
@@ -32,7 +32,7 @@ open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate
         }
     }
 
-    public init(responseEverywhere: Bool = true, actionBlock: @escaping ((UIViewController?) -> Void) = { _ in }) {
+    public init(responseEverywhere: Bool = true, actionBlock: @escaping ((UIViewController) -> Void) = { _ in }) {
         self.actionBlock = actionBlock
         super.init()
         contentView.contentMode = .scaleAspectFit
@@ -81,6 +81,10 @@ open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate
     }
 
     @objc open func openItem() {
+        guard let parentViewController else {
+            assertionFailure("ConfigurableActionView requires a parent view controller to execute actions")
+            return
+        }
         actionBlock(parentViewController)
     }
 }
