@@ -43,8 +43,7 @@ public extension ConfigurableObject {
 }
 
 public extension ConfigurableObject {
-    nonisolated
-    protocol AnnotationProtocol: AnyObject {
+    nonisolated protocol AnnotationProtocol: AnyObject {
         @MainActor
         func createView(fromObject object: ConfigurableObject) -> ConfigurableView
     }

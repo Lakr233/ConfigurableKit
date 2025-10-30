@@ -8,20 +8,29 @@
 import Combine
 import Foundation
 
-nonisolated
-open class UserDefaultKeyValueStorage: KeyValueStorage {
+open nonisolated class UserDefaultKeyValueStorage: KeyValueStorage {
     let suite: UserDefaults
+    let prefix: String?
 
-    public init(suite: UserDefaults) {
+    public init(suite: UserDefaults, prefix: String? = nil) {
         self.suite = suite
+        self.prefix = prefix
+    }
+
+    private func prefixedKey(_ key: String) -> String {
+        if let prefix {
+            return prefix + key
+        }
+        return key
     }
 
     public func value(forKey: String) -> Data? {
-        suite.data(forKey: forKey)
+        suite.data(forKey: prefixedKey(forKey))
     }
 
     public func setValue(_ data: Data?, forKey: String) {
-        suite.set(data, forKey: forKey)
+        let prefixedKey = prefixedKey(forKey)
+        suite.set(data, forKey: prefixedKey)
         valueUpdatePublisher.send((forKey, data))
 
         #if DEBUG
@@ -38,20 +47,18 @@ open class UserDefaultKeyValueStorage: KeyValueStorage {
                    .trimmingCharacters(in: .whitespacesAndNewlines),
                    !jsonText.isEmpty
                 { objectText = jsonText }
-                print("[ConfiguableKit] set value for key: \(forKey) with object: \(objectText)")
+                print("[ConfiguableKit] set value for key: \(prefixedKey) with object: \(objectText)")
             }
         #endif
     }
 
     #if DEBUG
         private var printValueChange: Bool { Self.printValueChange }
-        nonisolated(unsafe)
-        private static var printValueChange: Bool = false
+        private nonisolated(unsafe) static var printValueChange: Bool = false
         public static func printEveryValueChange() {
             printValueChange = true
         }
     #endif
 
-    nonisolated(unsafe)
-    public static let valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> = .init()
+    public nonisolated(unsafe) static let valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> = .init()
 }

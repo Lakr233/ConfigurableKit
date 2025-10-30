@@ -8,8 +8,7 @@
 import Combine
 import Foundation
 
-nonisolated
-public protocol KeyValueStorage: AnyObject {
+public nonisolated protocol KeyValueStorage: AnyObject {
     #if DEBUG
         static func printEveryValueChange()
     #endif
@@ -21,8 +20,7 @@ public protocol KeyValueStorage: AnyObject {
     static var valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> { get }
 }
 
-nonisolated
-public extension KeyValueStorage {
+public nonisolated extension KeyValueStorage {
     var valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> {
         Self.valueUpdatePublisher
     }

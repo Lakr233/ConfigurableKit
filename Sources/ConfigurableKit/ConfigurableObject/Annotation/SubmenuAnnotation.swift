@@ -7,8 +7,7 @@
 
 import UIKit
 
-nonisolated
-open class SubmenuAnnotation: ConfigurableObject.AnnotationProtocol {
+open nonisolated class SubmenuAnnotation: ConfigurableObject.AnnotationProtocol {
     let children: () -> [ConfigurableObject]
     init(children: @escaping () -> [ConfigurableObject]) {
         self.children = children
