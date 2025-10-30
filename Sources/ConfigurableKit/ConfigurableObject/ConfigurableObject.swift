@@ -15,24 +15,26 @@ enum ReservedKeys: String {
     case ignored = "ConfigurableValue.Reserved.Ignored"
 }
 
-@MainActor
 open class ConfigurableObject {
-    public let icon: String.LocalizationValue
-    public let title: String.LocalizationValue
-    public let explain: String.LocalizationValue
+    nonisolated public let icon: String.LocalizationValue
+    nonisolated public let title: String.LocalizationValue
+    nonisolated public let explain: String.LocalizationValue
 
-    public let key: String
-    public let annotation: AnyAnnotation
-
+    nonisolated public let key: String
+    nonisolated public let annotation: AnyAnnotation
+    
+    nonisolated
     public let availabilityRequirement: AvailabilityRequirement?
 
-    @CodableStorage var value: ConfigurableKitAnyCodable
-    public var __value: CodableStorage { _value }
+    @CodableStorage
+    var value: ConfigurableKitAnyCodable
+    nonisolated public var __value: CodableStorage { _value }
 
-    public let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
-    public var cancellable: Set<AnyCancellable> = []
+    nonisolated public let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
+    
+    nonisolated public var cancellable: Set<AnyCancellable> = []
 
-    public init(
+    nonisolated public init(
         icon: String.LocalizationValue,
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
@@ -71,23 +73,27 @@ open class ConfigurableObject {
             .eraseToAnyPublisher()
     }
 
+    nonisolated
     public func publisher<T: Codable>(forKey key: String, type _: T) -> AnyPublisher<T?, Never> {
         ConfigurableKit.publisher(forKey: key, type: T.self, storage: __value.storage)
     }
 
     @discardableResult
+    nonisolated
     public func whenValueChanged(to newValue: @escaping (ConfigurableKitAnyCodable) -> Void) -> Self {
         onChange.sink { newValue($0) }.store(in: &cancellable)
         return self
     }
 
     @discardableResult
+    nonisolated
     public func whenValueChange<T: Codable>(type _: T.Type, to newValue: @escaping (T?) -> Void) -> Self {
         onChange.sink { newValue(try? $0.decodingValue()) }.store(in: &cancellable)
         return self
     }
 
     @discardableResult
+    nonisolated
     public func whenValueChange<T: Equatable & Codable>(type _: T.Type, to newValue: @escaping (T?) -> T?) -> Self {
         onChange.sink { [weak self] input in
             let typedInput: T? = try? input.decodingValue()
@@ -99,6 +105,7 @@ open class ConfigurableObject {
     }
 }
 
+nonisolated
 public extension ConfigurableObject {
     convenience init(
         icon: String.LocalizationValue,

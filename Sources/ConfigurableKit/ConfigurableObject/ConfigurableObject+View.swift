@@ -8,6 +8,7 @@
 import UIKit
 
 public extension ConfigurableObject {
+    @MainActor
     func createView() -> ConfigurableView {
         let view = annotation.createView(fromObject: self)
         view.configure(icon: .image(optionalName: String(localized: icon)))

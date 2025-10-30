@@ -8,12 +8,12 @@
 import Foundation
 import UIKit
 
-@MainActor
-open class ConfigurableManifest {
+open nonisolated class ConfigurableManifest {
     public let title: String.LocalizationValue
     public let list: [ConfigurableObject]
     public let footer: UIView
 
+    @MainActor
     public init(
         title: String.LocalizationValue? = nil,
         list: [ConfigurableObject],
@@ -26,6 +26,7 @@ open class ConfigurableManifest {
 }
 
 public extension ConfigurableManifest {
+    @MainActor
     convenience init(
         title: String.LocalizationValue? = nil,
         list: [ConfigurableObject],
