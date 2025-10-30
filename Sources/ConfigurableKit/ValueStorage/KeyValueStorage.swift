@@ -9,10 +9,6 @@ import Combine
 import Foundation
 
 public nonisolated protocol KeyValueStorage: AnyObject {
-    #if DEBUG
-        static func printEveryValueChange()
-    #endif
-
     func value(forKey: String) -> Data?
     func setValue(_ data: Data?, forKey: String)
 

@@ -18,12 +18,6 @@ public enum ConfigurableKit {
         }
     }
 
-    #if DEBUG
-        public static func printEveryValueChange() {
-            type(of: storage).printEveryValueChange()
-        }
-    #endif
-
     public static func set(
         value: (some Codable)?,
         forKey key: String,
