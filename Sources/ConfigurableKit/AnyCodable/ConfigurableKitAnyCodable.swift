@@ -13,7 +13,8 @@ import Foundation
  - SeeAlso: `AnyEncodable`
  - SeeAlso: `AnyDecodable`
  */
-@frozen public struct ConfigurableKitAnyCodable: Codable {
+@frozen
+public struct ConfigurableKitAnyCodable: Codable {
     @usableFromInline
     let contentValue: Any
 

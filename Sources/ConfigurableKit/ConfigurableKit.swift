@@ -10,9 +10,12 @@ import Foundation
 import UIKit
 
 public enum ConfigurableKit {
+    nonisolated(unsafe)
     public static var storage: KeyValueStorage = UserDefaultKeyValueStorage(suite: .standard) {
         didSet {
-            assert(UIApplication.shared.delegate == nil)
+            MainActor.assumeIsolated {
+                assert(UIApplication.shared.delegate == nil)
+            }
         }
     }
 

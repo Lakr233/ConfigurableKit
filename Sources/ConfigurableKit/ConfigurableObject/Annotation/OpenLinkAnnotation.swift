@@ -16,6 +16,7 @@ open class OpenLinkAnnotation: ConfigurableObject.AnnotationProtocol {
         self.url = url
     }
 
+    @MainActor
     public func createView(fromObject _: ConfigurableObject) -> ConfigurableView {
         ConfigurableLinkView(buttonTitle: title, url: url)
     }

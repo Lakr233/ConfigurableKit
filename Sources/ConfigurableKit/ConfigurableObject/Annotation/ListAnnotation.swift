@@ -13,6 +13,7 @@ open class ListAnnotation: ConfigurableObject.AnnotationProtocol {
         self.selections = selections
     }
 
+    @MainActor
     public func createView(fromObject object: ConfigurableObject) -> ConfigurableView {
         ConfigurableMenuView(storage: object.__value, selection: selections)
     }

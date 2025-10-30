@@ -10,7 +10,7 @@ import UIKit
 public extension ConfigurableObject {
     func createView() -> ConfigurableView {
         let view = annotation.createView(fromObject: self)
-        view.configure(icon: .image(optionalName: icon))
+        view.configure(icon: .image(optionalName: String(localized: icon)))
         view.configure(title: title)
         view.configure(description: explain)
         if let availabilityRequirement {

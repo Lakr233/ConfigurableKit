@@ -14,6 +14,7 @@ open class ActionAnnotation: ConfigurableObject.AnnotationProtocol {
         self.handler = handler
     }
 
+    @MainActor
     public func createView(fromObject _: ConfigurableObject) -> ConfigurableView {
         ConfigurableActionView(actionBlock: handler)
     }

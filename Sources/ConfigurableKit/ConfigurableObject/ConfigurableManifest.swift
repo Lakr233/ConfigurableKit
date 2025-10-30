@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+@MainActor
 open class ConfigurableManifest {
     public let title: String.LocalizationValue
     public let list: [ConfigurableObject]
@@ -35,7 +36,7 @@ public extension ConfigurableManifest {
         label.font = .preferredFont(forTextStyle: .footnote)
         label.alpha = 0.5
         label.textColor = .label
-        label.text = footer
+        label.text = String(localized: footer)
         label.textAlignment = .center
         self.init(title: title, list: list, footer: label)
     }

@@ -15,6 +15,7 @@ enum ReservedKeys: String {
     case ignored = "ConfigurableValue.Reserved.Ignored"
 }
 
+@MainActor
 open class ConfigurableObject {
     public let icon: String.LocalizationValue
     public let title: String.LocalizationValue
@@ -45,8 +46,9 @@ open class ConfigurableObject {
         self.title = title
 
         var buildExplain: String.LocalizationValue = explain
-        if explain.isEmpty, let submenu = annotation as? SubmenuAnnotation {
-            buildExplain = submenu.children().map(\.title).joined(separator: " / ")
+        if String(localized: explain).isEmpty, let submenu = annotation as? SubmenuAnnotation {
+            let titles = submenu.children().map { String(localized: $0.title) }
+            buildExplain = String.LocalizationValue(stringLiteral: titles.joined(separator: " / "))
         }
         self.explain = buildExplain
 

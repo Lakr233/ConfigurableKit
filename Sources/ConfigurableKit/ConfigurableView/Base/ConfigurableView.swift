@@ -111,8 +111,10 @@ open class ConfigurableView: UIStackView {
     }
 
     deinit {
-        cancellables.forEach { $0.cancel() }
-        cancellables.removeAll()
+        MainActor.assumeIsolated {
+            cancellables.forEach { $0.cancel() }
+            cancellables.removeAll()
+        }
     }
 
     open class func createContentView() -> UIView {
@@ -130,7 +132,7 @@ open class ConfigurableView: UIStackView {
     open func configure(description: String.LocalizationValue) {
         titleLabel.accessibilityHint = String(localized: description)
         descriptionLabel.text = String(localized: description)
-        descriptionLabel.isHidden = description.isEmpty
+        descriptionLabel.isHidden = String(localized: description).isEmpty
     }
 
     open func subscribeToAvailability(_ publisher: AnyPublisher<Bool, Never>, initialValue: Bool) {

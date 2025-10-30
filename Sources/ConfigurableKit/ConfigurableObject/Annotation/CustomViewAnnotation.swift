@@ -13,6 +13,7 @@ open class CustomViewAnnotation: ConfigurableObject.AnnotationProtocol {
         self.view = view
     }
 
+    @MainActor
     public func createView(fromObject _: ConfigurableObject) -> ConfigurableView {
         let ret = ConfigurableView()
         ret.subviews.forEach { $0.removeFromSuperview() }

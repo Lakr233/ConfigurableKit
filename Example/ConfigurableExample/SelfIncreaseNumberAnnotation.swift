@@ -11,6 +11,7 @@ import Foundation
 import UIKit
 
 class SelfIncreaseNumberAnnotation: ConfigurableObject.AnnotationProtocol {
+    @MainActor
     func createView(fromObject object: ConfigurableObject) -> ConfigurableView {
         SelfIncreaseNumberConfigurableView(storage: object.__value)
     }

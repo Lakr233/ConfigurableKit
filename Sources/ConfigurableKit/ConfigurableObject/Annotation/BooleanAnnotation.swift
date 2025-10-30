@@ -8,6 +8,7 @@
 import UIKit
 
 open class BooleanAnnotation: ConfigurableObject.AnnotationProtocol {
+    @MainActor
     public func createView(fromObject object: ConfigurableObject) -> ConfigurableView {
         ConfigurableBooleanView(storage: object.__value)
     }

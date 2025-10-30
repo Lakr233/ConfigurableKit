@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 
+nonisolated
 open class UserDefaultKeyValueStorage: KeyValueStorage {
     let suite: UserDefaults
 
@@ -44,11 +45,13 @@ open class UserDefaultKeyValueStorage: KeyValueStorage {
 
     #if DEBUG
         private var printValueChange: Bool { Self.printValueChange }
+        nonisolated(unsafe)
         private static var printValueChange: Bool = false
         public static func printEveryValueChange() {
             printValueChange = true
         }
     #endif
 
-    public static var valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> = .init()
+    nonisolated(unsafe)
+    public static let valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> = .init()
 }

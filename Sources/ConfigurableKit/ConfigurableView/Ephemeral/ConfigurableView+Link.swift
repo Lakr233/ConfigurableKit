@@ -18,13 +18,14 @@ open class ConfigurableLinkView: ConfigurableView {
 
         super.init()
 
-        let attrString = NSAttributedString(string: buttonTitle, attributes: [
+        let buttonTitleString = String(localized: buttonTitle)
+        let attrString = NSAttributedString(string: buttonTitleString, attributes: [
             .foregroundColor: UIColor.accent,
             .font: UIFont.preferredFont(forTextStyle: .subheadline).semibold,
             .underlineStyle: NSUnderlineStyle.single.rawValue,
         ])
 
-        let pressedAttrString = NSAttributedString(string: buttonTitle, attributes: [
+        let pressedAttrString = NSAttributedString(string: buttonTitleString, attributes: [
             .foregroundColor: UIColor.accent.withAlphaComponent(0.5),
             .font: UIFont.preferredFont(forTextStyle: .subheadline).semibold,
             .underlineStyle: NSUnderlineStyle.single.rawValue,

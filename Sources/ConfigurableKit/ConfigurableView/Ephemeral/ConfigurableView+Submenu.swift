@@ -16,7 +16,8 @@ open class ConfigurableSubmenuView: ConfigurableActionView {
 
         super.init(responseEverywhere: true)
         actionBlock = { [weak self] parentViewController in
-            let menu = ConfigurableViewController(manifest: .init(title: self?.titleLabel.text, list: childrenReader()))
+            let titleValue: String.LocalizationValue? = self?.titleLabel.text.map { String.LocalizationValue(stringLiteral: $0) }
+            let menu = ConfigurableViewController(manifest: .init(title: titleValue, list: childrenReader()))
             parentViewController?.navigationController?.pushViewController(menu, animated: true)
         }
     }

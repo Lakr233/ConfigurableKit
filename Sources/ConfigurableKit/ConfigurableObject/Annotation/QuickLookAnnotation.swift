@@ -16,6 +16,7 @@ open class QuickLookAnnotation: ConfigurableObject.AnnotationProtocol {
         self.url = url
     }
 
+    @MainActor
     public func createView(fromObject _: ConfigurableObject) -> ConfigurableView {
         ConfigurableQuickLookView(buttonTitle: title, url: url)
     }

@@ -13,7 +13,7 @@ open class ConfigurableViewController: StackScrollController {
     public init(manifest: ConfigurableManifest) {
         self.manifest = manifest
         super.init(nibName: nil, bundle: nil)
-        title = manifest.title
+        title = String(localized: manifest.title)
     }
 
     @available(*, unavailable)

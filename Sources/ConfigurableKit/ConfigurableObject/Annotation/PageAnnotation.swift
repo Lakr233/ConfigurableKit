@@ -14,6 +14,7 @@ open class PageAnnotation: ConfigurableObject.AnnotationProtocol {
         self.viewController = viewController
     }
 
+    @MainActor
     public func createView(fromObject _: ConfigurableObject) -> ConfigurableView {
         ConfigurablePageView(page: viewController)
     }

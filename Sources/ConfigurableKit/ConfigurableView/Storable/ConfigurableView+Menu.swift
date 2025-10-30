@@ -44,11 +44,11 @@ open class ConfigurableMenuView: ConfigurableValueView {
 
         var text: String = value.decodingValue(defaultValue: String(describing: value))
         for item in selection where item.rawValue == value {
-            text = item.title
+            text = String(localized: item.title)
             break
         }
 
-        if text.isEmpty { text = String.LocalizationValue("Unspecified") }
+        if text.isEmpty { text = String(localized: String.LocalizationValue("Unspecified")) }
 
         let attrString = NSAttributedString(string: text, attributes: [
             .foregroundColor: UIColor.accent,
@@ -82,7 +82,7 @@ open class ConfigurableMenuView: ConfigurableValueView {
     open func menuWithSelection(_ selection: [ListAnnotation.ValueItem]) -> [UIMenuElement] {
         let groupedselection: OrderedDictionary<String, [ListAnnotation.ValueItem]>
         groupedselection = selection.reduce(into: [:]) { result, item in
-            result[item.section, default: []].append(item)
+            result[String(localized: item.section), default: []].append(item)
         }
         // if section is all empty, return UIActions directly
         if groupedselection.keys.allSatisfy(\.isEmpty) {
@@ -116,15 +116,15 @@ open class ConfigurableMenuView: ConfigurableValueView {
             UIImage(systemName: selectionItem.icon)
         }
         let action = UIAction(
-            title: selectionItem.title,
+            title: String(localized: selectionItem.title),
             image: icon
         ) { [weak self] _ in
             self?.value = selectionItem.rawValue
         }
         if selectionItem.rawValue == value {
-            action.state = .on
+            action.state = UIMenuElement.State.on
         } else {
-            action.state = .off
+            action.state = UIMenuElement.State.off
         }
         return action
     }

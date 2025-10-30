@@ -16,6 +16,7 @@ open class ShareLinkAnnotation: ConfigurableObject.AnnotationProtocol {
         self.url = url
     }
 
+    @MainActor
     public func createView(fromObject _: ConfigurableObject) -> ConfigurableView {
         ConfigurableShareLinkView(buttonTitle: title, url: url)
     }
