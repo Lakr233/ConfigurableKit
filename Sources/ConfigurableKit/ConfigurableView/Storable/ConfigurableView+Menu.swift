@@ -48,7 +48,7 @@ open class ConfigurableMenuView: ConfigurableValueView {
             break
         }
 
-        if text.isEmpty { text = NSLocalizedString("Unspecified", comment: "") }
+        if text.isEmpty { text = String.LocalizationValue("Unspecified") }
 
         let attrString = NSAttributedString(string: text, attributes: [
             .foregroundColor: UIColor.accent,

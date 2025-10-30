@@ -19,27 +19,27 @@ class ViewController: UIViewController {
             ephemeralAnnotation: .submenu { [
                 ConfigurableObject(
                     icon: "moon",
-                    title: NSLocalizedString("Color Theme", comment: ""),
-                    explain: NSLocalizedString("Select the color theme.", comment: ""),
+                    title: String.LocalizationValue("Color Theme"),
+                    explain: String.LocalizationValue("Select the color theme."),
                     key: "theme",
                     defaultValue: InterfaceStyle.system.rawValue,
                     annotation: .list { [
                         .init(
                             icon: "circle.righthalf.fill",
-                            title: NSLocalizedString("System", comment: ""),
-                            section: NSLocalizedString("System", comment: ""),
+                            title: String.LocalizationValue("System"),
+                            section: String.LocalizationValue("System"),
                             rawValue: InterfaceStyle.system.rawValue
                         ),
                         .init(
                             icon: "sun.min",
-                            title: NSLocalizedString("Light", comment: ""),
-                            section: NSLocalizedString("Override", comment: ""),
+                            title: String.LocalizationValue("Light"),
+                            section: String.LocalizationValue("Override"),
                             rawValue: InterfaceStyle.light.rawValue
                         ),
                         .init(
                             icon: "moon",
-                            title: NSLocalizedString("Dark", comment: ""),
-                            section: NSLocalizedString("Override", comment: ""),
+                            title: String.LocalizationValue("Dark"),
+                            section: String.LocalizationValue("Override"),
                             rawValue: InterfaceStyle.dark.rawValue
                         ),
                     ] }

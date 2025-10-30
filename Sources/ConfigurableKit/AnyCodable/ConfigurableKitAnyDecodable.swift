@@ -40,7 +40,7 @@ import Foundation
 @usableFromInline
 protocol _AnyDecodable {
     var contentValue: Any { get }
-    init<T>(_ value: T?)
+    init(_ value: (some Any)?)
 }
 
 extension ConfigurableKitAnyDecodable: _AnyDecodable {}

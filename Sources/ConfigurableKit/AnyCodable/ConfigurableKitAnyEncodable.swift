@@ -38,7 +38,7 @@ import Foundation
 @usableFromInline
 protocol _AnyEncodable {
     var contentValue: Any { get }
-    init<T>(_ value: T?)
+    init(_ value: (some Any)?)
 }
 
 extension ConfigurableKitAnyEncodable: _AnyEncodable {}

@@ -124,12 +124,12 @@ open class ConfigurableView: UIStackView {
     }
 
     open func configure(title: String.LocalizationValue) {
-        titleLabel.text = title
+        titleLabel.text = String(localized: title)
     }
 
     open func configure(description: String.LocalizationValue) {
-        titleLabel.accessibilityHint = description
-        descriptionLabel.text = description
+        titleLabel.accessibilityHint = String(localized: description)
+        descriptionLabel.text = String(localized: description)
         descriptionLabel.isHidden = description.isEmpty
     }
 

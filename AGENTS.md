@@ -47,3 +47,7 @@
 - `unowned` when guaranteed non-nil
 - Capture lists in closures
 - `deinit` for cleanup
+
+## Build
+
+- call `build.sh` from the root directory to build the project

@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "ConfigurableKit", targets: ["ConfigurableKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-collections", from: "1.1.4"),
+        .package(url: "https://github.com/apple/swift-collections", from: "1.3.0"),
     ],
     targets: [
         .target(name: "ConfigurableKit", dependencies: [

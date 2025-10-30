@@ -22,7 +22,7 @@ open class ConfigurableSectionFooterView: ConfigurableView {
 
     @discardableResult
     open func with(footer: String.LocalizationValue) -> Self {
-        titleLabel.text = footer
+        titleLabel.text = String(localized: footer)
         return self
     }
 

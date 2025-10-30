@@ -22,7 +22,7 @@ open class ConfigurableSectionHeaderView: ConfigurableView {
 
     @discardableResult
     open func with(header: String.LocalizationValue) -> Self {
-        titleLabel.text = header
+        titleLabel.text = String(localized: header)
         return self
     }
 

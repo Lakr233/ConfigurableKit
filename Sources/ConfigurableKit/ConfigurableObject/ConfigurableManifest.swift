@@ -18,7 +18,7 @@ open class ConfigurableManifest {
         list: [ConfigurableObject],
         footer: UIView = .init()
     ) {
-        self.title = title ?? NSLocalizedString("Settings", comment: "")
+        self.title = title ?? String.LocalizationValue("Settings")
         self.list = list
         self.footer = footer
     }
