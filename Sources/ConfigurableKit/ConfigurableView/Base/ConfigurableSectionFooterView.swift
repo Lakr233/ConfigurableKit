@@ -25,6 +25,12 @@ open class ConfigurableSectionFooterView: ConfigurableView {
         titleLabel.text = String(localized: footer)
         return self
     }
+    
+    @discardableResult
+    open func with(rawFooter: String) -> Self {
+        titleLabel.text = rawFooter
+        return self
+    }
 
     override open func configure(icon _: UIImage?) {
         fatalError()

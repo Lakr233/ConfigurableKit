@@ -26,6 +26,12 @@ open class ConfigurableSectionHeaderView: ConfigurableView {
         return self
     }
 
+    @discardableResult
+    open func with(rawHeader: String) -> Self {
+        titleLabel.text = rawHeader
+        return self
+    }
+
     override open func configure(icon _: UIImage?) {
         fatalError()
     }
