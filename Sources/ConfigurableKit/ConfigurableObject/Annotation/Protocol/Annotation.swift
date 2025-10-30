@@ -19,9 +19,9 @@ public extension ConfigurableObject {
         case page(viewController: () -> (UIViewController))
         case action(handler: (UIViewController?) -> Void)
 
-        case openLink(title: String, url: URL)
-        case quickLook(title: String, url: URL)
-        case shareLink(title: String, url: URL)
+        case openLink(title: String.LocalizationValue, url: URL)
+        case quickLook(title: String.LocalizationValue, url: URL)
+        case shareLink(title: String.LocalizationValue, url: URL)
 
         // use custom view as entire cell, ignore other items
         case custom(view: () -> (UIView))

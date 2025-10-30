@@ -9,12 +9,12 @@ import Foundation
 import UIKit
 
 open class ConfigurableManifest {
-    public let title: String
+    public let title: String.LocalizationValue
     public let list: [ConfigurableObject]
     public let footer: UIView
 
     public init(
-        title: String? = nil,
+        title: String.LocalizationValue? = nil,
         list: [ConfigurableObject],
         footer: UIView = .init()
     ) {
@@ -26,9 +26,9 @@ open class ConfigurableManifest {
 
 public extension ConfigurableManifest {
     convenience init(
-        title: String? = nil,
+        title: String.LocalizationValue? = nil,
         list: [ConfigurableObject],
-        footer: String
+        footer: String.LocalizationValue
     ) {
         let label = UILabel()
         label.numberOfLines = 0

@@ -21,14 +21,14 @@ open class ListAnnotation: ConfigurableObject.AnnotationProtocol {
 public extension ListAnnotation {
     struct ValueItem: Codable {
         public let icon: String
-        public let title: String
-        public let section: String
+        public let title: String.LocalizationValue
+        public let section: String.LocalizationValue
         public let rawValue: ConfigurableKitAnyCodable // used for callback
 
         public init(
             icon: String = "",
-            title: String,
-            section: String = "",
+            title: String.LocalizationValue,
+            section: String.LocalizationValue = "",
             rawValue: ConfigurableKitAnyCodable
         ) {
             self.icon = icon
@@ -42,8 +42,8 @@ public extension ListAnnotation {
 public extension ListAnnotation.ValueItem {
     init(
         icon: String = "",
-        title: String,
-        section: String = "",
+        title: String.LocalizationValue,
+        section: String.LocalizationValue = "",
         rawValue: some Codable
     ) {
         self.icon = icon

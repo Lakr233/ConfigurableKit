@@ -21,7 +21,7 @@ open class ConfigurableSectionHeaderView: ConfigurableView {
     }
 
     @discardableResult
-    open func with(header: String) -> Self {
+    open func with(header: String.LocalizationValue) -> Self {
         titleLabel.text = header
         return self
     }
@@ -30,11 +30,11 @@ open class ConfigurableSectionHeaderView: ConfigurableView {
         fatalError()
     }
 
-    override open func configure(title _: String) {
-        fatalError("Use with(header: String) instead.")
+    override open func configure(title _: String.LocalizationValue) {
+        fatalError("Use with(header: String.LocalizationValue) instead.")
     }
 
-    override open func configure(description _: String) {
+    override open func configure(description _: String.LocalizationValue) {
         fatalError()
     }
 }

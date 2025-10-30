@@ -8,10 +8,10 @@
 import UIKit
 
 open class QuickLookAnnotation: ConfigurableObject.AnnotationProtocol {
-    public let title: String
+    public let title: String.LocalizationValue
     public let url: URL
 
-    public init(title: String, url: URL) {
+    public init(title: String.LocalizationValue, url: URL) {
         self.title = title
         self.url = url
     }

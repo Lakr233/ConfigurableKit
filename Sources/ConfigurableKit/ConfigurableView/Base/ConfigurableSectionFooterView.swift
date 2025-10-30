@@ -21,7 +21,7 @@ open class ConfigurableSectionFooterView: ConfigurableView {
     }
 
     @discardableResult
-    open func with(footer: String) -> Self {
+    open func with(footer: String.LocalizationValue) -> Self {
         titleLabel.text = footer
         return self
     }
@@ -30,11 +30,11 @@ open class ConfigurableSectionFooterView: ConfigurableView {
         fatalError()
     }
 
-    override open func configure(title _: String) {
-        fatalError("Use with(header: String) instead.")
+    override open func configure(title _: String.LocalizationValue) {
+        fatalError("Use with(header: String.LocalizationValue) instead.")
     }
 
-    override open func configure(description _: String) {
+    override open func configure(description _: String.LocalizationValue) {
         fatalError()
     }
 }

@@ -16,9 +16,9 @@ enum ReservedKeys: String {
 }
 
 open class ConfigurableObject {
-    public let icon: String
-    public let title: String
-    public let explain: String
+    public let icon: String.LocalizationValue
+    public let title: String.LocalizationValue
+    public let explain: String.LocalizationValue
 
     public let key: String
     public let annotation: AnyAnnotation
@@ -32,9 +32,9 @@ open class ConfigurableObject {
     public var cancellable: Set<AnyCancellable> = []
 
     public init(
-        icon: String,
-        title: String,
-        explain: String = "",
+        icon: String.LocalizationValue,
+        title: String.LocalizationValue,
+        explain: String.LocalizationValue = "",
         key: String,
         defaultValue: ConfigurableKitAnyCodable,
         annotation: AnyAnnotation,
@@ -44,7 +44,7 @@ open class ConfigurableObject {
         self.icon = icon
         self.title = title
 
-        var buildExplain: String = explain
+        var buildExplain: String.LocalizationValue = explain
         if explain.isEmpty, let submenu = annotation as? SubmenuAnnotation {
             buildExplain = submenu.children().map(\.title).joined(separator: " / ")
         }
@@ -99,9 +99,9 @@ open class ConfigurableObject {
 
 public extension ConfigurableObject {
     convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
+        icon: String.LocalizationValue,
+        title: String.LocalizationValue,
+        explain: String.LocalizationValue = "",
         key: String,
         defaultValue: ConfigurableKitAnyCodable,
         annotation: Annotation,
@@ -121,9 +121,9 @@ public extension ConfigurableObject {
     }
 
     convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
+        icon: String.LocalizationValue,
+        title: String.LocalizationValue,
+        explain: String.LocalizationValue = "",
         key: String,
         defaultValue: some Codable,
         annotation: AnyAnnotation,
@@ -143,9 +143,9 @@ public extension ConfigurableObject {
     }
 
     convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
+        icon: String.LocalizationValue,
+        title: String.LocalizationValue,
+        explain: String.LocalizationValue = "",
         key: String,
         defaultValue: some Codable,
         annotation: Annotation,
@@ -165,9 +165,9 @@ public extension ConfigurableObject {
     }
 
     convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
+        icon: String.LocalizationValue,
+        title: String.LocalizationValue,
+        explain: String.LocalizationValue = "",
         ephemeralAnnotation: AnyAnnotation,
         availabilityRequirement: AvailabilityRequirement? = nil
     ) {
@@ -184,9 +184,9 @@ public extension ConfigurableObject {
     }
 
     convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
+        icon: String.LocalizationValue,
+        title: String.LocalizationValue,
+        explain: String.LocalizationValue = "",
         ephemeralAnnotation: Annotation,
         availabilityRequirement: AvailabilityRequirement? = nil
     ) {

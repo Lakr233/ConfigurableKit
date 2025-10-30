@@ -123,11 +123,11 @@ open class ConfigurableView: UIStackView {
         iconView.image = icon?.applyingSymbolConfiguration(.icon)
     }
 
-    open func configure(title: String) {
+    open func configure(title: String.LocalizationValue) {
         titleLabel.text = title
     }
 
-    open func configure(description: String) {
+    open func configure(description: String.LocalizationValue) {
         titleLabel.accessibilityHint = description
         descriptionLabel.text = description
         descriptionLabel.isHidden = description.isEmpty
