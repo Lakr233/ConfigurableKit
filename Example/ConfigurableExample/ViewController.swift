@@ -133,7 +133,7 @@ class ViewController: UIViewController {
                             preferredStyle: .alert
                         )
                         alert.addAction(.init(title: "OK", style: .default))
-                        viewController?.present(alert, animated: true)
+                        viewController.present(alert, animated: true)
                     }
                 ),
                 ConfigurableObject(
