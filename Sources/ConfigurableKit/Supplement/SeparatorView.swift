@@ -7,7 +7,15 @@
 
 import UIKit
 
-open class SeparatorView: UIView {
+public protocol ConfigurableSeparatorProtocol: UIView {
+    static var defaultHeight: CGFloat { get }
+}
+
+public extension ConfigurableSeparatorProtocol {
+    static var defaultHeight: CGFloat { 0.5 }
+}
+
+open class SeparatorView: UIView, ConfigurableSeparatorProtocol {
     public static let color: UIColor = .gray.withAlphaComponent(0.1)
 
     override init(frame: CGRect) {

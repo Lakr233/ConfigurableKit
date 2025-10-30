@@ -143,6 +143,37 @@ class SelfIncreaseNumberConfigurableView: ConfigurableValueView {
 }
 ```
 
+### Customize Separator
+
+You can customize the separator view by conforming to `ConfigurableSeparatorProtocol`. This allows you to change the appearance and height of separators throughout your app.
+
+```swift
+import ConfigurableKit
+import UIKit
+
+class CustomSeparator: UIView, ConfigurableSeparatorProtocol {
+    static let defaultHeight: CGFloat = 2.0
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .systemBlue.withAlphaComponent(0.3)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+}
+
+// Use it in your stack view
+stackView.addArrangedSubview(CustomSeparator())
+```
+
+The protocol requires:
+- Conformance to `UIView`
+- A static `defaultHeight` property (default is 0.5)
+
+You can create various separator styles like gradient separators, dashed lines, or any custom design.
+
 ### Present Setting Controller
 
 We have two view controller for easy use. Both of them accepting a `ConfigurableManifest`. Manifest is just a list of `ConfigurableObject`, with a title and a footer.

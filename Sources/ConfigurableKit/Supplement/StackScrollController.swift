@@ -55,16 +55,16 @@ open class StackScrollController: UIViewController {
         setupContentViews()
         stackView
             .subviews
-            .compactMap { view -> SeparatorView? in
-                if view is SeparatorView {
-                    return view as? SeparatorView
+            .compactMap { view -> (any ConfigurableSeparatorProtocol)? in
+                if let separator = view as? any ConfigurableSeparatorProtocol {
+                    return separator
                 }
                 return nil
-            }.forEach {
-                $0.translatesAutoresizingMaskIntoConstraints = false
+            }.forEach { separator in
+                separator.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    $0.heightAnchor.constraint(equalToConstant: 0.5),
-                    $0.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+                    separator.heightAnchor.constraint(equalToConstant: type(of: separator).defaultHeight),
+                    separator.widthAnchor.constraint(equalTo: stackView.widthAnchor),
                 ])
             }
     }
