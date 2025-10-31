@@ -33,7 +33,7 @@ open nonisolated class UserDefaultKeyValueStorage: KeyValueStorage {
     public func setValue(_ data: Data?, forKey: String) {
         let prefixedKey = prefixedKey(forKey)
         suite.set(data, forKey: prefixedKey)
-        
+
         let valueUpdatePublisher = Self.valueUpdatePublisher
         DispatchQueue.main.async {
             valueUpdatePublisher.send((forKey, data))
