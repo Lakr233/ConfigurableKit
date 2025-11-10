@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+@MainActor
 public extension ConfigurableObject {
     typealias AnyAnnotation = any AnnotationProtocol
 

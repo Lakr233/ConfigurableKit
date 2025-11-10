@@ -9,12 +9,24 @@ import Combine
 import Foundation
 import UIKit
 
+@MainActor
 public enum ConfigurableKit {
-    public nonisolated(unsafe) static var storage: KeyValueStorage = UserDefaultKeyValueStorage(suite: .standard) {
-        didSet {
-            MainActor.assumeIsolated {
-                assert(UIApplication.shared.delegate == nil)
+    private static var backingStorage: KeyValueStorage = UserDefaultKeyValueStorage(suite: .standard)
+    private static var isUsingDefaultStore = true
+
+    public static var storage: KeyValueStorage {
+        get { backingStorage }
+        set {
+            backingStorage = newValue
+            if isUsingDefaultStore {
+                configStore = KeyValueConfigStore(storage: newValue)
             }
+        }
+    }
+
+    public static var configStore: ConfigStore = KeyValueConfigStore(storage: backingStorage) {
+        didSet {
+            isUsingDefaultStore = configStore is KeyValueConfigStore
         }
     }
 

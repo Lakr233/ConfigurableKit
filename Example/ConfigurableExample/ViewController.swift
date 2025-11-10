@@ -5,12 +5,15 @@
 //  Created by 秋星桥 on 2025/1/4.
 //
 
+import Combine
 import ConfigurableKit
 import UIKit
 
 let shareFile = Bundle.main.url(forResource: "File", withExtension: "png")!
 
 class ViewController: UIViewController {
+    private var cancellables: Set<AnyCancellable> = []
+
     let configurableValues: [ConfigurableObject] = [
         ConfigurableObject(
             icon: "number",
@@ -253,7 +256,19 @@ class ViewController: UIViewController {
         ),
     ]
 
-    let button = UIButton(type: .system)
+    private let legacyButton = UIButton(type: .system)
+    private let declarativeButton = UIButton(type: .system)
+    private lazy var buttonStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [declarativeButton, legacyButton])
+        stack.axis = .vertical
+        stack.spacing = 16
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+
+    private var didOpenOnAppear = false
+
     lazy var settingController = ConfigurableSheetController(manifest: .init(
         title: "Settings",
         list: configurableValues,
@@ -263,25 +278,61 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.addSubview(button)
-        button.setTitle("Open Setting Page", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.addTarget(self, action: #selector(open), for: .touchUpInside)
-    }
+        view.backgroundColor = .systemBackground
 
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        button.frame = CGRect(x: 0, y: 0, width: 256, height: 64)
-        button.center = view.center
+        declarativeButton.setTitle("Open Declarative Settings", for: .normal)
+        declarativeButton.setTitleColor(.systemBlue, for: .normal)
+        declarativeButton.addTarget(self, action: #selector(openDeclarative), for: .touchUpInside)
+
+        legacyButton.setTitle("Open Legacy Settings", for: .normal)
+        legacyButton.setTitleColor(.systemBlue, for: .normal)
+        legacyButton.addTarget(self, action: #selector(openLegacy), for: .touchUpInside)
+
+        declarativeButton.translatesAutoresizingMaskIntoConstraints = false
+        legacyButton.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(buttonStack)
+
+        NSLayoutConstraint.activate([
+            buttonStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            buttonStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            declarativeButton.widthAnchor.constraint(equalToConstant: 240),
+            legacyButton.widthAnchor.constraint(equalTo: declarativeButton.widthAnchor),
+        ])
+
+        ConfigurableKit.publisher(for: DemoSettings.Keys.interfaceStyle)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] style in
+                self?.applyInterfaceStyle(style)
+            }
+            .store(in: &cancellables)
+
+        let currentStyle = ConfigurableKit.value(for: DemoSettings.Keys.interfaceStyle)
+        applyInterfaceStyle(currentStyle)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        open()
+        if !didOpenOnAppear {
+            didOpenOnAppear = true
+            openDeclarative()
+        }
     }
 
-    @objc func open() {
+    @objc private func openLegacy() {
         settingController.title = "Settings"
         present(settingController, animated: true)
+    }
+
+    @objc private func openDeclarative() {
+        let controller = ConfigHostingController(GeneralSettingsPage())
+        controller.title = "General"
+        let navigationController = UINavigationController(rootViewController: controller)
+        navigationController.modalPresentationStyle = .formSheet
+        present(navigationController, animated: true)
+    }
+
+    private func applyInterfaceStyle(_ style: InterfaceStyle) {
+        overrideUserInterfaceStyle = style.style
     }
 }

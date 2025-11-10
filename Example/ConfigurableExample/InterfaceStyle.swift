@@ -8,10 +8,43 @@
 import Foundation
 import UIKit
 
-enum InterfaceStyle: String {
+enum InterfaceStyle: String, CaseIterable, Codable, Sendable {
     case system
     case light
     case dark
+
+    var title: String {
+        switch self {
+        case .system:
+            "System"
+        case .light:
+            "Light"
+        case .dark:
+            "Dark"
+        }
+    }
+
+    var subtitle: String? {
+        switch self {
+        case .system:
+            "Follow the current system setting"
+        case .light:
+            "Always use a light interface"
+        case .dark:
+            "Always use a dark interface"
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .system:
+            "circle.righthalf.fill"
+        case .light:
+            "sun.min"
+        case .dark:
+            "moon"
+        }
+    }
 
     var style: UIUserInterfaceStyle {
         switch self {
