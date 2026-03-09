@@ -23,7 +23,7 @@ public extension ConfigurableObject {
         case quickLook(title: String.LocalizationValue, url: URL)
         case shareLink(title: String.LocalizationValue, url: URL)
 
-        // use custom view as entire cell, ignore other items
+        /// use custom view as entire cell, ignore other items
         case custom(view: () -> (UIView))
 
         var mapObject: AnyAnnotation {
@@ -60,7 +60,7 @@ public extension ConfigurableObject.Annotation {
 }
 
 public extension ConfigurableObject {
-    nonisolated protocol AnnotationProtocol: AnyObject {
+    protocol AnnotationProtocol: AnyObject {
         @MainActor
         func createView(fromObject object: ConfigurableObject) -> ConfigurableView
     }

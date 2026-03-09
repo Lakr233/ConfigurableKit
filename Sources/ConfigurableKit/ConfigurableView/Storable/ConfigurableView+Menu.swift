@@ -10,7 +10,10 @@ import OrderedCollections
 import UIKit
 
 open class ConfigurableMenuView: ConfigurableValueView {
-    open var button: EasyHitButton { contentView as! EasyHitButton }
+    open var button: EasyHitButton {
+        contentView as! EasyHitButton
+    }
+
     let selection: () -> [ListAnnotation.ValueItem]
 
     public init(storage: CodableStorage, selection: @escaping () -> [ListAnnotation.ValueItem]) {

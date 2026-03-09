@@ -37,8 +37,7 @@ public enum ConfigurableKit {
 
     public static func value<T: Codable>(forKey key: String, storage: KeyValueStorage = storage) -> T? {
         let data = storage.value(forKey: key) ?? .init()
-        let currentValue: T? = try? CodableStorage.decode(data: data)?.decodingValue()
-        return currentValue
+        return try? CodableStorage.decode(data: data)?.decodingValue()
     }
 
     /// Receive value immediately and it's update in the future

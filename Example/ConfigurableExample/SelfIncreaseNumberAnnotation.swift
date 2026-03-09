@@ -6,7 +6,6 @@
 //
 
 import ConfigurableKit
-
 import Foundation
 import UIKit
 
@@ -18,7 +17,9 @@ class SelfIncreaseNumberAnnotation: ConfigurableObject.AnnotationProtocol {
 }
 
 class SelfIncreaseNumberConfigurableView: ConfigurableValueView {
-    var button: UIButton { contentView as! UIButton }
+    var button: UIButton {
+        contentView as! UIButton
+    }
 
     var intValue: Int {
         get { value.decodingValue(defaultValue: 0) }

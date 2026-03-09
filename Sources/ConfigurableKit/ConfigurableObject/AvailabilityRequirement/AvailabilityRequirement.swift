@@ -22,7 +22,7 @@ public extension ConfigurableObject {
 }
 
 extension ConfigurableObject.AvailabilityRequirement {
-    // for better readability, compiler will handle the optimisation
+    /// for better readability, compiler will handle the optimisation
     func compare(with target: any Hashable) -> Bool {
         let result = compareTypeAndHash(with: target)
         switch reversed {

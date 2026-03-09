@@ -8,7 +8,7 @@
 @preconcurrency import Combine
 import Foundation
 
-open nonisolated class UserDefaultKeyValueStorage: KeyValueStorage {
+open class UserDefaultKeyValueStorage: KeyValueStorage {
     public static let valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> = .init()
 
     let suite: UserDefaults

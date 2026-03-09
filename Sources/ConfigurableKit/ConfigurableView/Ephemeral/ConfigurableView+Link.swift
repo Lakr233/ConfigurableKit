@@ -11,7 +11,9 @@ import UIKit
 open class ConfigurableLinkView: ConfigurableView {
     let url: URL
 
-    open var button: EasyHitButton { contentView as! EasyHitButton }
+    open var button: EasyHitButton {
+        contentView as! EasyHitButton
+    }
 
     public init(buttonTitle: String.LocalizationValue, url: URL) {
         self.url = url

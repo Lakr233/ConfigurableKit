@@ -12,7 +12,9 @@ public protocol ConfigurableSeparatorProtocol: UIView {
 }
 
 public extension ConfigurableSeparatorProtocol {
-    static var defaultHeight: CGFloat { 0.5 }
+    static var defaultHeight: CGFloat {
+        0.5
+    }
 }
 
 open class SeparatorView: UIView, ConfigurableSeparatorProtocol {

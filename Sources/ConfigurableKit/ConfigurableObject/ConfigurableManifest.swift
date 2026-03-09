@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-open nonisolated class ConfigurableManifest {
+open class ConfigurableManifest {
     public let title: String.LocalizationValue
     public let list: [ConfigurableObject]
     public let footer: UIView

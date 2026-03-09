@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-public nonisolated protocol KeyValueStorage: AnyObject {
+public protocol KeyValueStorage: AnyObject {
     func value(forKey: String) -> Data?
     func setValue(_ data: Data?, forKey: String)
 
@@ -16,7 +16,7 @@ public nonisolated protocol KeyValueStorage: AnyObject {
     static var valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> { get }
 }
 
-public nonisolated extension KeyValueStorage {
+public extension KeyValueStorage {
     var valueUpdatePublisher: PassthroughSubject<(String, Data?), Never> {
         Self.valueUpdatePublisher
     }

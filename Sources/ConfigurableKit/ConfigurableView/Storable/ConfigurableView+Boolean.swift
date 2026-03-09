@@ -9,7 +9,9 @@ import Combine
 import UIKit
 
 open class ConfigurableBooleanView: ConfigurableValueView {
-    open var switchView: UISwitch { contentView as! UISwitch }
+    open var switchView: UISwitch {
+        contentView as! UISwitch
+    }
 
     open var boolValue: Bool {
         get { value.decodingValue(defaultValue: false) }

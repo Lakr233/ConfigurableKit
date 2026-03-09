@@ -16,24 +16,26 @@ enum ReservedKeys: String {
 }
 
 open class ConfigurableObject {
-    public nonisolated let icon: String
-    public nonisolated let title: String.LocalizationValue
-    public nonisolated let explain: String.LocalizationValue
+    public let icon: String
+    public let title: String.LocalizationValue
+    public let explain: String.LocalizationValue
 
-    public nonisolated let key: String
-    public nonisolated let annotation: AnyAnnotation
+    public let key: String
+    public let annotation: AnyAnnotation
 
-    public nonisolated let availabilityRequirement: AvailabilityRequirement?
+    public let availabilityRequirement: AvailabilityRequirement?
 
     @CodableStorage
     var value: ConfigurableKitAnyCodable
-    public nonisolated var __value: CodableStorage { _value }
+    public var __value: CodableStorage {
+        _value
+    }
 
-    public nonisolated let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
+    public let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
 
-    public nonisolated var cancellable: Set<AnyCancellable> = []
+    public var cancellable: Set<AnyCancellable> = []
 
-    public nonisolated init(
+    public init(
         icon: String,
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
@@ -72,24 +74,24 @@ open class ConfigurableObject {
             .eraseToAnyPublisher()
     }
 
-    public nonisolated func publisher<T: Codable>(forKey key: String, type _: T) -> AnyPublisher<T?, Never> {
+    public func publisher<T: Codable>(forKey key: String, type _: T) -> AnyPublisher<T?, Never> {
         ConfigurableKit.publisher(forKey: key, type: T.self, storage: __value.storage)
     }
 
     @discardableResult
-    public nonisolated func whenValueChanged(to newValue: @escaping (ConfigurableKitAnyCodable) -> Void) -> Self {
+    public func whenValueChanged(to newValue: @escaping (ConfigurableKitAnyCodable) -> Void) -> Self {
         onChange.sink { newValue($0) }.store(in: &cancellable)
         return self
     }
 
     @discardableResult
-    public nonisolated func whenValueChange<T: Codable>(type _: T.Type, to newValue: @escaping (T?) -> Void) -> Self {
+    public func whenValueChange<T: Codable>(type _: T.Type, to newValue: @escaping (T?) -> Void) -> Self {
         onChange.sink { newValue(try? $0.decodingValue()) }.store(in: &cancellable)
         return self
     }
 
     @discardableResult
-    public nonisolated func whenValueChange<T: Equatable & Codable>(type _: T.Type, to newValue: @escaping (T?) -> T?) -> Self {
+    public func whenValueChange<T: Equatable & Codable>(type _: T.Type, to newValue: @escaping (T?) -> T?) -> Self {
         onChange.sink { [weak self] input in
             let typedInput: T? = try? input.decodingValue()
             let overwrite = newValue(typedInput)
@@ -100,7 +102,7 @@ open class ConfigurableObject {
     }
 }
 
-public nonisolated extension ConfigurableObject {
+public extension ConfigurableObject {
     convenience init(
         icon: String,
         title: String.LocalizationValue,
@@ -212,7 +214,7 @@ public nonisolated extension ConfigurableObject {
     }
 
     @_disfavoredOverload
-    convenience nonisolated init(
+    convenience init(
         icon: String,
         title: String,
         explain: String = "",
@@ -235,7 +237,7 @@ public nonisolated extension ConfigurableObject {
     }
 
     @_disfavoredOverload
-    convenience nonisolated init(
+    convenience init(
         icon: String,
         title: String,
         explain: String = "",
@@ -258,7 +260,7 @@ public nonisolated extension ConfigurableObject {
     }
 
     @_disfavoredOverload
-    convenience nonisolated init(
+    convenience init(
         icon: String,
         title: String,
         explain: String = "",
@@ -281,7 +283,7 @@ public nonisolated extension ConfigurableObject {
     }
 
     @_disfavoredOverload
-    convenience nonisolated init(
+    convenience init(
         icon: String,
         title: String,
         explain: String = "",
@@ -304,7 +306,7 @@ public nonisolated extension ConfigurableObject {
     }
 
     @_disfavoredOverload
-    convenience nonisolated init(
+    convenience init(
         icon: String,
         title: String,
         explain: String = "",
@@ -321,7 +323,7 @@ public nonisolated extension ConfigurableObject {
     }
 
     @_disfavoredOverload
-    convenience nonisolated init(
+    convenience init(
         icon: String,
         title: String,
         explain: String = "",

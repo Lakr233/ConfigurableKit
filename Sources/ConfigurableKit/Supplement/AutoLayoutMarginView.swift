@@ -17,7 +17,9 @@ public class AutoLayoutMarginView: UIView {
         }
     }
 
-    var view: UIView { subviews.first! }
+    var view: UIView {
+        subviews.first!
+    }
 
     var viewTopConstraint: NSLayoutConstraint?
     var viewLeadingConstraint: NSLayoutConstraint?

@@ -20,7 +20,9 @@ open class ConfigurableActionView: ConfigurableView, UIGestureRecognizerDelegate
         action: #selector(openItem)
     )
 
-    open var imageView: UIImageView { contentView as! UIImageView }
+    open var imageView: UIImageView {
+        contentView as! UIImageView
+    }
 
     open var isHighlighted: Bool = false {
         didSet {

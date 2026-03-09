@@ -33,8 +33,7 @@ public struct ConfigurableKitAnyCodable: Codable {
         if let value = contentValue as? T { return value }
         // code and decode the value for conversion
         let data = try Self.encoder.encode(self)
-        let object = try Self.decoder.decode(T.self, from: data)
-        return object
+        return try Self.decoder.decode(T.self, from: data)
     }
 }
 
