@@ -41,7 +41,10 @@ open class ObjectListFormDataSource<Item: ObjectListFormItem>: ObjectListDataSou
         guard let primary = fields.first else { return }
 
         cell.configure(icon: .image(optionalName: primary.icon))
-        cell.configure(title: String.LocalizationValue(stringLiteral: primary.displayValue(from: item)))
+
+        let primaryValue = primary.displayValue(from: item)
+        let titleText = primaryValue.isEmpty ? String(localized: "Untitled") : primaryValue
+        cell.configure(title: String.LocalizationValue(stringLiteral: titleText))
 
         let details = fields.dropFirst()
             .map { $0.displayValue(from: item) }
@@ -125,22 +128,14 @@ open class ObjectListFormDataSource<Item: ObjectListFormItem>: ObjectListDataSou
             let editVC = ConfigurableViewController(manifest: manifest)
             editVC.title = isNew ? String(localized: "New Item") : String(localized: "Edit")
 
-            let nav = UINavigationController(rootViewController: editVC)
-            nav.modalPresentationStyle = .formSheet
-
-            editVC.navigationItem.leftBarButtonItem = UIBarButtonItem(
-                systemItem: .cancel,
-                primaryAction: UIAction { _ in
-                    nav.dismiss(animated: true) {
-                        continuation.resume(returning: nil)
-                    }
-                }
-            )
+            // Track whether Done was pressed; if VC is popped without it, resume with nil
+            let commitState = CommitState()
 
             editVC.navigationItem.rightBarButtonItem = UIBarButtonItem(
                 systemItem: .done,
                 primaryAction: UIAction { [weak self] _ in
                     guard let self else { return }
+                    commitState.didCommit = true
                     var result = item
                     for field in fields where field.isEditable {
                         field.applyValue(from: tempStorage, keyPrefix: sessionID, to: &result)
@@ -151,13 +146,26 @@ open class ObjectListFormDataSource<Item: ObjectListFormItem>: ObjectListDataSou
                         items[idx] = result
                     }
                     continuation.resume(returning: result)
-                    nav.dismiss(animated: true)
+                    viewController.navigationController?.popViewController(animated: true)
                 }
             )
 
-            viewController.present(nav, animated: true)
+            // Resume with nil when the VC disappears without committing (back button)
+            editVC.onDeinit = {
+                if !commitState.didCommit {
+                    continuation.resume(returning: nil)
+                }
+            }
+
+            viewController.navigationController?.pushViewController(editVC, animated: true)
         }
     }
+}
+
+// MARK: - Commit State
+
+private final class CommitState: @unchecked Sendable {
+    var didCommit = false
 }
 
 // MARK: - In-Memory Storage

@@ -74,11 +74,11 @@ open class ConfigurableObject {
         self.annotation = annotation
         self.availabilityRequirement = availabilityRequirement
 
-        while key.hasPrefix(ReservedKeys.prefix.rawValue) {
-            if key == ReservedKeys.submenu.rawValue { break }
-            if key == ReservedKeys.ignored.rawValue { break }
-            assertionFailure()
-            break
+        if key.hasPrefix(ReservedKeys.prefix.rawValue),
+           key != ReservedKeys.submenu.rawValue,
+           key != ReservedKeys.ignored.rawValue
+        {
+            assertionFailure("key uses reserved prefix: \(key)")
         }
 
         _value = .init(key: key, defaultValue: .init(defaultValue), storage: storage)

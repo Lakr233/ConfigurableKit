@@ -9,12 +9,12 @@ import UIKit
 
 extension UIView {
     var parentViewController: UIViewController? {
-        weak var parentResponder: UIResponder? = self
-        while parentResponder != nil {
-            parentResponder = parentResponder!.next
-            if let viewController = parentResponder as? UIViewController {
+        var responder: UIResponder? = next
+        while let current = responder {
+            if let viewController = current as? UIViewController {
                 return viewController
             }
+            responder = current.next
         }
         return nil
     }

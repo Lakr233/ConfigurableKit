@@ -25,6 +25,11 @@ open class ConfigurableViewController: StackScrollController {
     }
 
     public var cancellables = Set<AnyCancellable>()
+    public var onDeinit: (@Sendable () -> Void)?
+
+    deinit {
+        onDeinit?()
+    }
 
     override open func viewDidLoad() {
         super.viewDidLoad()

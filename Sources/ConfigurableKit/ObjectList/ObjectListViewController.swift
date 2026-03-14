@@ -66,6 +66,11 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
         delegate?.objectListViewControllerDidLoad(self)
     }
 
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        applySnapshot(animated: false)
+    }
+
     // MARK: - Diffable Data Source
 
     private func setupDiffableDataSource() {
@@ -114,7 +119,9 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
         let items = filteredAndSortedItems()
         var snapshot = NSDiffableDataSourceSnapshot<Int, UUID>()
         snapshot.appendSections([0])
-        snapshot.appendItems(items.map(\.id), toSection: 0)
+        let ids = items.map(\.id)
+        snapshot.appendItems(ids, toSection: 0)
+        snapshot.reconfigureItems(ids)
         diffableDataSource.apply(snapshot, animatingDifferences: animated)
     }
 
@@ -163,36 +170,55 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
     // MARK: - Navigation Bar
 
     private func setupNavigationBar() {
-        let addButton = UIBarButtonItem(
-            systemItem: .add,
-            primaryAction: UIAction { [weak self] _ in
-                guard let self else { return }
-                Task { @MainActor in
-                    guard let _ = await self.dataSource.createItem(from: self) else { return }
-                    self.applySnapshot()
-                }
-            }
-        )
-
-        var rightItems: [UIBarButtonItem] = [addButton]
-
-        if !dataSource.sortCriteria.isEmpty {
-            let sortButton = UIBarButtonItem(
-                image: UIImage(systemName: "arrow.up.arrow.down"),
-                menu: buildSortMenu()
-            )
-            rightItems.append(sortButton)
-        }
-
+        var rightItems = [UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: buildActionsMenu())]
         delegate?.objectListViewController(self, configureTrailingBarButtonItems: &rightItems)
         navigationItem.rightBarButtonItems = rightItems
 
-        var leftItems: [UIBarButtonItem] = [editButtonItem]
+        var leftItems: [UIBarButtonItem] = []
         delegate?.objectListViewController(self, configureLeadingBarButtonItems: &leftItems)
-        navigationItem.leftBarButtonItems = leftItems
+        if !leftItems.isEmpty {
+            navigationItem.leftBarButtonItems = leftItems
+        }
     }
 
-    // MARK: - Sort Menu
+    // MARK: - Actions Menu
+
+    private func buildActionsMenu() -> UIMenu {
+        var children: [UIMenuElement] = []
+
+        // Add
+        let add = UIAction(
+            title: String(localized: "Add"),
+            image: UIImage(systemName: "plus")
+        ) { [weak self] _ in
+            guard let self else { return }
+            Task { @MainActor in
+                guard let _ = await self.dataSource.createItem(from: self) else { return }
+                self.applySnapshot()
+            }
+        }
+        children.append(add)
+
+        // Edit mode
+        let editTitle = tableView.isEditing
+            ? String(localized: "Done")
+            : String(localized: "Select")
+        let edit = UIAction(
+            title: editTitle,
+            image: UIImage(systemName: tableView.isEditing ? "checkmark.circle" : "checkmark.circle")
+        ) { [weak self] _ in
+            guard let self else { return }
+            setEditing(!tableView.isEditing, animated: true)
+        }
+        children.append(edit)
+
+        // Sort submenu
+        if !dataSource.sortCriteria.isEmpty {
+            children.append(buildSortMenu())
+        }
+
+        return UIMenu(children: children)
+    }
 
     private func buildSortMenu() -> UIMenu {
         let actions = dataSource.sortCriteria.map { criterion in
@@ -203,7 +229,7 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
             ) { [weak self] _ in
                 self?.currentSortCriterion = criterion
                 self?.applySnapshot()
-                self?.updateSortMenu()
+                self?.rebuildActionsMenu()
             }
         }
         return UIMenu(
@@ -213,11 +239,8 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
         )
     }
 
-    private func updateSortMenu() {
-        guard let sortButton = navigationItem.rightBarButtonItems?.first(where: {
-            $0.image == UIImage(systemName: "arrow.up.arrow.down")
-        }) else { return }
-        sortButton.menu = buildSortMenu()
+    private func rebuildActionsMenu() {
+        navigationItem.rightBarButtonItems?.first?.menu = buildActionsMenu()
     }
 
     // MARK: - Edit Mode
