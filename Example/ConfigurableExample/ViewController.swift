@@ -190,6 +190,12 @@ class ViewController: UIViewController {
                 ),
             ] }
         ),
+        ConfigurableObject(
+            icon: "person.2",
+            title: "User Management",
+            explain: "ObjectListFormItem demo with search, sort, CRUD, drag-drop",
+            ephemeralAnnotation: ObjectListAnnotation(dataSource: demoUserDataSource)
+        ),
         ConfigurableObject {
             let label = UILabel()
             label.text = "Press Esc to Close"

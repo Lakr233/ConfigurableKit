@@ -24,6 +24,7 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
     // MARK: - Properties
 
     public let dataSource: DataSource
+    public weak var delegate: ObjectListViewControllerDelegate?
 
     private var diffableDataSource: UITableViewDiffableDataSource<Int, UUID>!
     private let searchController = UISearchController(searchResultsController: nil)
@@ -62,6 +63,7 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
         setupDragDrop()
         subscribeToChanges()
         applySnapshot(animated: false)
+        delegate?.objectListViewControllerDidLoad(self)
     }
 
     // MARK: - Diffable Data Source
@@ -182,8 +184,12 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
             rightItems.append(sortButton)
         }
 
+        delegate?.objectListViewController(self, configureTrailingBarButtonItems: &rightItems)
         navigationItem.rightBarButtonItems = rightItems
-        navigationItem.leftBarButtonItem = editButtonItem
+
+        var leftItems: [UIBarButtonItem] = [editButtonItem]
+        delegate?.objectListViewController(self, configureLeadingBarButtonItems: &leftItems)
+        navigationItem.leftBarButtonItems = leftItems
     }
 
     // MARK: - Sort Menu
@@ -236,11 +242,13 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
             deleteButton.tintColor = .systemRed
             deleteButton.isEnabled = selectedCount > 0
 
-            toolbarItems = [
+            var editingToolbarItems: [UIBarButtonItem] = [
                 UIBarButtonItem(systemItem: .flexibleSpace),
                 deleteButton,
                 UIBarButtonItem(systemItem: .flexibleSpace),
             ]
+            delegate?.objectListViewController(self, configureToolbarItems: &editingToolbarItems)
+            toolbarItems = editingToolbarItems
             navigationController?.setToolbarHidden(false, animated: true)
         } else {
             navigationController?.setToolbarHidden(true, animated: true)
@@ -365,6 +373,9 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
                 self?.applySnapshot()
             }
             actions.append(delete)
+
+            let delegateActions = delegate?.objectListViewController(self, contextMenuActionsForItemWith: itemID) ?? []
+            actions.append(contentsOf: delegateActions)
 
             return UIMenu(children: actions)
         }

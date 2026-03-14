@@ -15,6 +15,7 @@ public extension ConfigurableObject {
         case submenu(children: () -> [ConfigurableObject])
 
         case toggle
+        case textInput(placeholder: String = "")
         case menu(selections: () -> [MenuAnnotation.Option])
         case page(viewController: () -> (UIViewController))
         case action(handler: @MainActor (UIViewController) async -> Void)
@@ -26,10 +27,11 @@ public extension ConfigurableObject {
         /// use custom view as entire cell, ignore other items
         case custom(view: () -> (UIView))
 
-        var mapObject: AnyAnnotation {
+        func createAnnotation() -> AnyAnnotation {
             switch self {
             case let .submenu(children): SubmenuAnnotation(children: children)
             case .toggle: ToggleAnnotation()
+            case let .textInput(placeholder): TextInputAnnotation(placeholder: placeholder)
             case let .menu(selections): MenuAnnotation(selections: selections)
             case let .page(viewController): PageAnnotation(viewController: viewController)
             case let .action(handler): ActionAnnotation(handler: handler)
@@ -52,6 +54,6 @@ public extension ConfigurableObject {
 extension ConfigurableObject.Annotation: ConfigurableObject.AnnotationProtocol {
     @MainActor
     public func createView(fromObject object: ConfigurableObject) -> ConfigurableView {
-        mapObject.createView(fromObject: object)
+        createAnnotation().createView(fromObject: object)
     }
 }

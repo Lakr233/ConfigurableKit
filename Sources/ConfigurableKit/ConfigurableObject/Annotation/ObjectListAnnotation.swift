@@ -12,9 +12,14 @@ open class ObjectListAnnotation: ConfigurableObject.AnnotationProtocol {
     let viewControllerFactory: @MainActor () -> UIViewController
 
     @MainActor
-    public init(dataSource: some ObjectListDataSource) {
+    public init(
+        dataSource: some ObjectListDataSource,
+        delegate: ObjectListViewControllerDelegate? = nil
+    ) {
         viewControllerFactory = {
-            ObjectListViewController(dataSource: dataSource)
+            let vc = ObjectListViewController(dataSource: dataSource)
+            vc.delegate = delegate
+            return vc
         }
     }
 

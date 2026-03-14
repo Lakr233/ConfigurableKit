@@ -141,7 +141,7 @@ public extension ConfigurableObject {
             explain: explain,
             key: key,
             defaultValue: defaultValue,
-            annotation: annotation.mapObject,
+            annotation: annotation.createAnnotation(),
             availabilityRequirement: availabilityRequirement,
             storage: storage
         )
@@ -160,7 +160,7 @@ public extension ConfigurableObject {
             explain: explain,
             key: ReservedKeys.submenu.rawValue,
             defaultValue: "ConfigurableValue.IgnoredValue",
-            annotation: ephemeralAnnotation.mapObject,
+            annotation: ephemeralAnnotation.createAnnotation(),
             availabilityRequirement: availabilityRequirement,
             storage: ConfigurableKit.storage
         )
