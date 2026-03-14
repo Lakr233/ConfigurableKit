@@ -1,5 +1,5 @@
 //
-//  BooleanAnnotation.swift
+//  ToggleAnnotation.swift
 //  ConfigurableKit
 //
 //  Created by 秋星桥 on 2025/1/5.
@@ -7,9 +7,9 @@
 
 import UIKit
 
-open class BooleanAnnotation: ConfigurableObject.AnnotationProtocol {
+open class ToggleAnnotation: ConfigurableObject.AnnotationProtocol {
     @MainActor
     public func createView(fromObject object: ConfigurableObject) -> ConfigurableView {
-        ConfigurableBooleanView(storage: object.__value)
+        ConfigurableToggleView(storage: object.valueStorage)
     }
 }

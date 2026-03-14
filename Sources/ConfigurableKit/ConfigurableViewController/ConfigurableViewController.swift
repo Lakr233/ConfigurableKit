@@ -10,6 +10,9 @@ import UIKit
 
 open class ConfigurableViewController: StackScrollController {
     public let manifest: ConfigurableManifest
+
+    public weak var delegate: ConfigurableViewControllerDelegate?
+
     public init(manifest: ConfigurableManifest) {
         self.manifest = manifest
         super.init(nibName: nil, bundle: nil)
@@ -26,6 +29,37 @@ open class ConfigurableViewController: StackScrollController {
     override open func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+
+        var leadingItems: [UIBarButtonItem] = []
+        var trailingItems: [UIBarButtonItem] = []
+        var toolItems: [UIBarButtonItem] = []
+
+        delegate?.configurableViewController(self, configureLeadingBarButtonItems: &leadingItems)
+        delegate?.configurableViewController(self, configureTrailingBarButtonItems: &trailingItems)
+        delegate?.configurableViewController(self, configureToolbarItems: &toolItems)
+
+        if !leadingItems.isEmpty {
+            navigationItem.leftBarButtonItems = leadingItems
+        }
+        if !trailingItems.isEmpty {
+            navigationItem.rightBarButtonItems = trailingItems
+        }
+        if !toolItems.isEmpty {
+            toolbarItems = toolItems
+            navigationController?.setToolbarHidden(false, animated: false)
+        }
+
+        delegate?.configurableViewControllerDidLoad(self)
+    }
+
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        delegate?.configurableViewControllerWillAppear(self)
+    }
+
+    override open func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        delegate?.configurableViewControllerDidAppear(self)
     }
 
     override open func setupContentViews() {

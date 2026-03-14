@@ -1,5 +1,5 @@
 //
-//  ConfigurableView+ValueView.swift
+//  ConfigurableView+Storable.swift
 //  ConfigurableKit
 //
 //  Created by 秋星桥 on 2025/1/5.
@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-open class ConfigurableValueView: ConfigurableView {
+open class ConfigurableStorableView: ConfigurableView {
     @CodableStorage open var value: ConfigurableKitAnyCodable
 
     public init(storage: CodableStorage) {

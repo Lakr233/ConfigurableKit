@@ -1,5 +1,5 @@
 //
-//  ConfigurableView+Menu.swift
+//  ConfigurableView+Select.swift
 //  TRApp
 //
 //  Created by 82Flex on 2024/9/14.
@@ -9,14 +9,14 @@ import Combine
 import OrderedCollections
 import UIKit
 
-open class ConfigurableMenuView: ConfigurableValueView {
+open class ConfigurableSelectView: ConfigurableStorableView {
     open var button: EasyHitButton {
         contentView as! EasyHitButton
     }
 
-    let selection: () -> [ListAnnotation.ValueItem]
+    let selection: () -> [MenuAnnotation.Option]
 
-    public init(storage: CodableStorage, selection: @escaping () -> [ListAnnotation.ValueItem]) {
+    public init(storage: CodableStorage, selection: @escaping () -> [MenuAnnotation.Option]) {
         self.selection = selection
         super.init(storage: storage)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
@@ -82,8 +82,8 @@ open class ConfigurableMenuView: ConfigurableValueView {
         )
     }
 
-    open func menuWithSelection(_ selection: [ListAnnotation.ValueItem]) -> [UIMenuElement] {
-        let groupedselection: OrderedDictionary<String, [ListAnnotation.ValueItem]>
+    open func menuWithSelection(_ selection: [MenuAnnotation.Option]) -> [UIMenuElement] {
+        let groupedselection: OrderedDictionary<String, [MenuAnnotation.Option]>
         groupedselection = selection.reduce(into: [:]) { result, item in
             result[String(localized: item.section), default: []].append(item)
         }
@@ -110,7 +110,7 @@ open class ConfigurableMenuView: ConfigurableValueView {
         }
     }
 
-    open func menuItemWithSelection(_ selectionItem: ListAnnotation.ValueItem) -> UIMenuElement {
+    open func menuItemWithSelection(_ selectionItem: MenuAnnotation.Option) -> UIMenuElement {
         let icon: UIImage? = if selectionItem.icon.isEmpty {
             nil
         } else if selectionItem.icon.hasPrefix("#") {

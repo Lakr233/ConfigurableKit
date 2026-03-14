@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 open class ConfigurableManifest {
-    public let title: String.LocalizationValue
-    public let list: [ConfigurableObject]
-    public let footer: UIView
+    public var title: String.LocalizationValue
+    public var list: [ConfigurableObject]
+    public var footer: UIView
 
     @MainActor
     public init(
@@ -22,34 +22,6 @@ open class ConfigurableManifest {
         self.title = title ?? String.LocalizationValue("Settings")
         self.list = list
         self.footer = footer
-    }
-
-    @MainActor
-    @_disfavoredOverload
-    public convenience init(
-        title: String? = nil,
-        list: [ConfigurableObject],
-        footer: UIView = .init()
-    ) {
-        self.init(
-            title: title == nil ? nil : String.LocalizationValue(title!),
-            list: list,
-            footer: footer
-        )
-    }
-
-    @MainActor
-    @_disfavoredOverload
-    public convenience init(
-        title: String? = nil,
-        list: [ConfigurableObject],
-        footer: String
-    ) {
-        self.init(
-            title: title == nil ? nil : String.LocalizationValue(title!),
-            list: list,
-            footer: String.LocalizationValue(footer)
-        )
     }
 }
 

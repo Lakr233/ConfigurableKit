@@ -23,7 +23,7 @@ class ViewController: UIViewController {
                     explain: String.LocalizationValue("Select the color theme."),
                     key: "theme",
                     defaultValue: InterfaceStyle.system.rawValue,
-                    annotation: .list { [
+                    annotation: .menu { [
                         .init(
                             icon: "circle.righthalf.fill",
                             title: String.LocalizationValue("System"),
@@ -71,7 +71,7 @@ class ViewController: UIViewController {
                     explain: "Item with boolean value to be edited",
                     key: "wiki.qaq.test.boolean",
                     defaultValue: true,
-                    annotation: .boolean
+                    annotation: .toggle
                 ),
                 ConfigurableObject(
                     icon: "switch.2",
@@ -79,8 +79,8 @@ class ViewController: UIViewController {
                     explain: "Requires above item to be true to be edited",
                     key: "wiki.qaq.test.boolean.inaccessible.0",
                     defaultValue: true,
-                    annotation: .boolean,
-                    availabilityRequirement: .init(key: "wiki.qaq.test.boolean")
+                    annotation: .toggle,
+                    availabilityRequirement: .match(key: "wiki.qaq.test.boolean")
                 ),
                 ConfigurableObject(
                     icon: "switch.2",
@@ -88,8 +88,8 @@ class ViewController: UIViewController {
                     explain: "Requires above item to be false to be edited",
                     key: "wiki.qaq.test.boolean.inaccessible.1",
                     defaultValue: true,
-                    annotation: .boolean,
-                    availabilityRequirement: .init(key: "wiki.qaq.test.boolean.inaccessible.0", reversed: true)
+                    annotation: .toggle,
+                    availabilityRequirement: .negatedMatch(key: "wiki.qaq.test.boolean.inaccessible.0")
                 ),
                 ConfigurableObject(
                     icon: "contextualmenu.and.cursorarrow",
@@ -97,7 +97,7 @@ class ViewController: UIViewController {
                     explain: "Choose value from a predefined list",
                     key: "wiki.qaq.test.menu",
                     defaultValue: "A",
-                    annotation: .list { [
+                    annotation: .menu { [
                         .init(icon: "1.circle", title: "Select Value 1", section: "Number Values", rawValue: "1"),
                         .init(icon: "2.circle", title: "Select Value 2", section: "Number Values", rawValue: "2"),
                         .init(icon: "3.circle", title: "Select Value 3", section: "Number Values", rawValue: "3"),
@@ -112,8 +112,8 @@ class ViewController: UIViewController {
                     explain: "Requires above item to be value A to be edited",
                     key: "wiki.qaq.test.boolean.inaccessible.2",
                     defaultValue: true,
-                    annotation: .boolean,
-                    availabilityRequirement: .init(key: "wiki.qaq.test.menu", match: "A")
+                    annotation: .toggle,
+                    availabilityRequirement: .match(key: "wiki.qaq.test.menu", value: "A")
                 ),
             ] }
         ),
@@ -140,7 +140,7 @@ class ViewController: UIViewController {
                     icon: "link",
                     title: "Informative Link",
                     explain: "Open a link, calls openURL under the hood",
-                    ephemeralAnnotation: .openLink(title: "example.com", url: URL(string: "https://example.com")!)
+                    ephemeralAnnotation: .link(title: "example.com", url: URL(string: "https://example.com")!)
                 ),
                 ConfigurableObject(
                     icon: "arrow.right",
@@ -162,7 +162,7 @@ class ViewController: UIViewController {
                                     explain: "This is \(i)(th) item",
                                     key: "wiki.qaq.test.boolean.\(i)",
                                     defaultValue: true,
-                                    annotation: .boolean
+                                    annotation: .toggle
                                 )
                             )
                         }
@@ -186,7 +186,7 @@ class ViewController: UIViewController {
                     icon: "arrow.right",
                     title: "Share Link",
                     explain: "Open system share sheet with the file",
-                    ephemeralAnnotation: .shareLink(title: "Share File", url: shareFile)
+                    ephemeralAnnotation: .share(title: "Share File", url: shareFile)
                 ),
             ] }
         ),
@@ -209,7 +209,7 @@ class ViewController: UIViewController {
                     explain: "This value is synchronized with Editor B",
                     key: "wiki.qaq.demo.sync.toggle",
                     defaultValue: true,
-                    annotation: .boolean
+                    annotation: .toggle
                 ),
                 ConfigurableObject(
                     icon: "2.circle",
@@ -217,7 +217,7 @@ class ViewController: UIViewController {
                     explain: "This value is synchronized with Editor A",
                     key: "wiki.qaq.demo.sync.toggle",
                     defaultValue: true,
-                    annotation: .boolean
+                    annotation: .toggle
                 ),
                 ConfigurableObject(
                     icon: "a.circle",
@@ -225,7 +225,7 @@ class ViewController: UIViewController {
                     explain: "This value is synchronized with Text List B",
                     key: "wiki.qaq.demo.sync.text.2",
                     defaultValue: "Happy",
-                    annotation: .list { [
+                    annotation: .menu { [
                         .init(title: "Happy", rawValue: "Happy"),
                         .init(title: "Sad", rawValue: "Sad"),
                         .init(title: "Angry", rawValue: "Angry"),
@@ -240,7 +240,7 @@ class ViewController: UIViewController {
                     explain: "This value is synchronized with Text List A",
                     key: "wiki.qaq.demo.sync.text.2",
                     defaultValue: "Happy",
-                    annotation: .list { [
+                    annotation: .menu { [
                         .init(title: "Happy", rawValue: "Happy"),
                         .init(title: "Sad", rawValue: "Sad"),
                         .init(title: "Angry", rawValue: "Angry"),

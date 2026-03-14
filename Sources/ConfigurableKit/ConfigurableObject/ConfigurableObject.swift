@@ -16,9 +16,17 @@ enum ReservedKeys: String {
 }
 
 open class ConfigurableObject {
-    public let icon: String
-    public let title: String.LocalizationValue
-    public let explain: String.LocalizationValue
+    public var icon: String {
+        didSet { metadataSubject.send(()) }
+    }
+
+    public var title: String.LocalizationValue {
+        didSet { metadataSubject.send(()) }
+    }
+
+    public var explain: String.LocalizationValue {
+        didSet { metadataSubject.send(()) }
+    }
 
     public let key: String
     public let annotation: AnyAnnotation
@@ -27,21 +35,28 @@ open class ConfigurableObject {
 
     @CodableStorage
     var value: ConfigurableKitAnyCodable
-    public var __value: CodableStorage {
+    public var valueStorage: CodableStorage {
         _value
     }
 
     public let onChange: AnyPublisher<ConfigurableKitAnyCodable, Never>
 
+    private let metadataSubject = PassthroughSubject<Void, Never>()
+    public var metadataDidChange: AnyPublisher<Void, Never> {
+        metadataSubject.eraseToAnyPublisher()
+    }
+
     public var cancellable: Set<AnyCancellable> = []
 
+    // MARK: - Primary Init (storable value, protocol-based annotation)
+
     public init(
-        icon: String,
+        icon: String = "",
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
         key: String,
-        defaultValue: ConfigurableKitAnyCodable,
-        annotation: AnyAnnotation,
+        defaultValue: some Codable,
+        annotation: some AnnotationProtocol,
         availabilityRequirement: AvailabilityRequirement? = nil,
         storage: KeyValueStorage = ConfigurableKit.storage
     ) {
@@ -66,7 +81,7 @@ open class ConfigurableObject {
             break
         }
 
-        _value = .init(key: key, defaultValue: defaultValue, storage: storage)
+        _value = .init(key: key, defaultValue: .init(defaultValue), storage: storage)
         onChange = _value.storage.valueUpdatePublisher
             .filter { $0.0 == key }
             .map { $0.1 ?? .init() }
@@ -74,8 +89,13 @@ open class ConfigurableObject {
             .eraseToAnyPublisher()
     }
 
+    deinit {
+        cancellable.forEach { $0.cancel() }
+        cancellable.removeAll()
+    }
+
     public func publisher<T: Codable>(forKey key: String, type _: T) -> AnyPublisher<T?, Never> {
-        ConfigurableKit.publisher(forKey: key, type: T.self, storage: __value.storage)
+        ConfigurableKit.publisher(forKey: key, type: T.self, storage: valueStorage.storage)
     }
 
     @discardableResult
@@ -102,13 +122,15 @@ open class ConfigurableObject {
     }
 }
 
+// MARK: - Annotation Enum Convenience Inits (for dot-syntax support)
+
 public extension ConfigurableObject {
     convenience init(
-        icon: String,
+        icon: String = "",
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
         key: String,
-        defaultValue: ConfigurableKitAnyCodable,
+        defaultValue: some Codable,
         annotation: Annotation,
         availabilityRequirement: AvailabilityRequirement? = nil,
         storage: KeyValueStorage = ConfigurableKit.storage
@@ -126,54 +148,33 @@ public extension ConfigurableObject {
     }
 
     convenience init(
-        icon: String,
+        icon: String = "",
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
-        key: String,
-        defaultValue: some Codable,
-        annotation: AnyAnnotation,
-        availabilityRequirement: AvailabilityRequirement? = nil,
-        storage: KeyValueStorage = ConfigurableKit.storage
+        ephemeralAnnotation: Annotation,
+        availabilityRequirement: AvailabilityRequirement? = nil
     ) {
         self.init(
             icon: icon,
             title: title,
             explain: explain,
-            key: key,
-            defaultValue: .init(defaultValue),
-            annotation: annotation,
+            key: ReservedKeys.submenu.rawValue,
+            defaultValue: "ConfigurableValue.IgnoredValue",
+            annotation: ephemeralAnnotation.mapObject,
             availabilityRequirement: availabilityRequirement,
-            storage: storage
+            storage: ConfigurableKit.storage
         )
     }
+}
 
+// MARK: - Protocol-based Ephemeral & Custom View Inits
+
+public extension ConfigurableObject {
     convenience init(
-        icon: String,
+        icon: String = "",
         title: String.LocalizationValue,
         explain: String.LocalizationValue = "",
-        key: String,
-        defaultValue: some Codable,
-        annotation: Annotation,
-        availabilityRequirement: AvailabilityRequirement? = nil,
-        storage: KeyValueStorage = ConfigurableKit.storage
-    ) {
-        self.init(
-            icon: icon,
-            title: title,
-            explain: explain,
-            key: key,
-            defaultValue: .init(defaultValue),
-            annotation: annotation.mapObject,
-            availabilityRequirement: availabilityRequirement,
-            storage: storage
-        )
-    }
-
-    convenience init(
-        icon: String,
-        title: String.LocalizationValue,
-        explain: String.LocalizationValue = "",
-        ephemeralAnnotation: AnyAnnotation,
+        ephemeralAnnotation: some AnnotationProtocol,
         availabilityRequirement: AvailabilityRequirement? = nil
     ) {
         self.init(
@@ -188,154 +189,12 @@ public extension ConfigurableObject {
         )
     }
 
-    convenience init(
-        icon: String,
-        title: String.LocalizationValue,
-        explain: String.LocalizationValue = "",
-        ephemeralAnnotation: Annotation,
-        availabilityRequirement: AvailabilityRequirement? = nil
-    ) {
-        self.init(
-            icon: icon,
-            title: title,
-            explain: explain,
-            ephemeralAnnotation: ephemeralAnnotation.mapObject,
-            availabilityRequirement: availabilityRequirement
-        )
-    }
-
     convenience init(customView: @escaping () -> (UIView)) {
         self.init(
             icon: "",
             title: "",
             explain: "",
-            ephemeralAnnotation: CustomViewAnnotation(view: customView)
-        )
-    }
-
-    @_disfavoredOverload
-    convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
-        key: String,
-        defaultValue: ConfigurableKitAnyCodable,
-        annotation: AnyAnnotation,
-        availabilityRequirement: AvailabilityRequirement? = nil,
-        storage: KeyValueStorage = ConfigurableKit.storage
-    ) {
-        self.init(
-            icon: icon,
-            title: String.LocalizationValue(title),
-            explain: String.LocalizationValue(explain),
-            key: key,
-            defaultValue: defaultValue,
-            annotation: annotation,
-            availabilityRequirement: availabilityRequirement,
-            storage: storage
-        )
-    }
-
-    @_disfavoredOverload
-    convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
-        key: String,
-        defaultValue: some Codable,
-        annotation: AnyAnnotation,
-        availabilityRequirement: AvailabilityRequirement? = nil,
-        storage: KeyValueStorage = ConfigurableKit.storage
-    ) {
-        self.init(
-            icon: icon,
-            title: String.LocalizationValue(title),
-            explain: String.LocalizationValue(explain),
-            key: key,
-            defaultValue: defaultValue,
-            annotation: annotation,
-            availabilityRequirement: availabilityRequirement,
-            storage: storage
-        )
-    }
-
-    @_disfavoredOverload
-    convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
-        key: String,
-        defaultValue: ConfigurableKitAnyCodable,
-        annotation: Annotation,
-        availabilityRequirement: AvailabilityRequirement? = nil,
-        storage: KeyValueStorage = ConfigurableKit.storage
-    ) {
-        self.init(
-            icon: icon,
-            title: String.LocalizationValue(title),
-            explain: String.LocalizationValue(explain),
-            key: key,
-            defaultValue: defaultValue,
-            annotation: annotation,
-            availabilityRequirement: availabilityRequirement,
-            storage: storage
-        )
-    }
-
-    @_disfavoredOverload
-    convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
-        key: String,
-        defaultValue: some Codable,
-        annotation: Annotation,
-        availabilityRequirement: AvailabilityRequirement? = nil,
-        storage: KeyValueStorage = ConfigurableKit.storage
-    ) {
-        self.init(
-            icon: icon,
-            title: String.LocalizationValue(title),
-            explain: String.LocalizationValue(explain),
-            key: key,
-            defaultValue: defaultValue,
-            annotation: annotation,
-            availabilityRequirement: availabilityRequirement,
-            storage: storage
-        )
-    }
-
-    @_disfavoredOverload
-    convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
-        ephemeralAnnotation: AnyAnnotation,
-        availabilityRequirement: AvailabilityRequirement? = nil
-    ) {
-        self.init(
-            icon: icon,
-            title: String.LocalizationValue(title),
-            explain: String.LocalizationValue(explain),
-            ephemeralAnnotation: ephemeralAnnotation,
-            availabilityRequirement: availabilityRequirement
-        )
-    }
-
-    @_disfavoredOverload
-    convenience init(
-        icon: String,
-        title: String,
-        explain: String = "",
-        ephemeralAnnotation: Annotation,
-        availabilityRequirement: AvailabilityRequirement? = nil
-    ) {
-        self.init(
-            icon: icon,
-            title: String.LocalizationValue(title),
-            explain: String.LocalizationValue(explain),
-            ephemeralAnnotation: ephemeralAnnotation,
-            availabilityRequirement: availabilityRequirement
+            ephemeralAnnotation: CustomAnnotation(view: customView)
         )
     }
 }

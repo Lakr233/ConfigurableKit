@@ -1,5 +1,5 @@
 //
-//  ConfigurableView+Boolean.swift
+//  ConfigurableView+Toggle.swift
 //  TRApp
 //
 //  Created by 82Flex on 2024/9/14.
@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-open class ConfigurableBooleanView: ConfigurableValueView {
+open class ConfigurableToggleView: ConfigurableStorableView {
     open var switchView: UISwitch {
         contentView as! UISwitch
     }

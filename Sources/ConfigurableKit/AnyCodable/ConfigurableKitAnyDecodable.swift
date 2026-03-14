@@ -81,118 +81,24 @@ extension _AnyDecodable {
 
 extension ConfigurableKitAnyDecodable: Equatable {
     public static func == (lhs: ConfigurableKitAnyDecodable, rhs: ConfigurableKitAnyDecodable) -> Bool {
-        switch (lhs.contentValue, rhs.contentValue) {
-        #if canImport(Foundation)
-            case is (NSNull, NSNull), is (Void, Void):
-                return true
-        #endif
-        case let (lhs as Bool, rhs as Bool):
-            return lhs == rhs
-        case let (lhs as Int, rhs as Int):
-            return lhs == rhs
-        case let (lhs as Int8, rhs as Int8):
-            return lhs == rhs
-        case let (lhs as Int16, rhs as Int16):
-            return lhs == rhs
-        case let (lhs as Int32, rhs as Int32):
-            return lhs == rhs
-        case let (lhs as Int64, rhs as Int64):
-            return lhs == rhs
-        case let (lhs as UInt, rhs as UInt):
-            return lhs == rhs
-        case let (lhs as UInt8, rhs as UInt8):
-            return lhs == rhs
-        case let (lhs as UInt16, rhs as UInt16):
-            return lhs == rhs
-        case let (lhs as UInt32, rhs as UInt32):
-            return lhs == rhs
-        case let (lhs as UInt64, rhs as UInt64):
-            return lhs == rhs
-        case let (lhs as Float, rhs as Float):
-            return lhs == rhs
-        case let (lhs as Double, rhs as Double):
-            return lhs == rhs
-        case let (lhs as String, rhs as String):
-            return lhs == rhs
-        case let (lhs as Data, rhs as Data):
-            return lhs == rhs
-        case let (lhs as Date, rhs as Date):
-            return lhs == rhs
-        case let (lhs as [String: ConfigurableKitAnyDecodable], rhs as [String: ConfigurableKitAnyDecodable]):
-            return lhs == rhs
-        case let (lhs as [ConfigurableKitAnyDecodable], rhs as [ConfigurableKitAnyDecodable]):
-            return lhs == rhs
-        default:
-            return false
-        }
+        AnyCodableShared.isEqual(lhs.contentValue, rhs.contentValue)
     }
 }
 
 extension ConfigurableKitAnyDecodable: CustomStringConvertible {
     public var description: String {
-        switch contentValue {
-        case is Void:
-            String(describing: nil as Any?)
-        case let value as CustomStringConvertible:
-            value.description
-        default:
-            String(describing: contentValue)
-        }
+        AnyCodableShared.description(of: contentValue)
     }
 }
 
 extension ConfigurableKitAnyDecodable: CustomDebugStringConvertible {
     public var debugDescription: String {
-        switch contentValue {
-        case let value as CustomDebugStringConvertible:
-            "AnyDecodable(\(value.debugDescription))"
-        default:
-            "AnyDecodable(\(description))"
-        }
+        AnyCodableShared.debugDescription(of: contentValue, typeName: "AnyDecodable", fallbackDescription: description)
     }
 }
 
 extension ConfigurableKitAnyDecodable: Hashable {
     public func hash(into hasher: inout Hasher) {
-        switch contentValue {
-        case let value as Bool:
-            hasher.combine(value)
-        case let value as Int:
-            hasher.combine(value)
-        case let value as Int8:
-            hasher.combine(value)
-        case let value as Int16:
-            hasher.combine(value)
-        case let value as Int32:
-            hasher.combine(value)
-        case let value as Int64:
-            hasher.combine(value)
-        case let value as UInt:
-            hasher.combine(value)
-        case let value as UInt8:
-            hasher.combine(value)
-        case let value as UInt16:
-            hasher.combine(value)
-        case let value as UInt32:
-            hasher.combine(value)
-        case let value as UInt64:
-            hasher.combine(value)
-        case let value as Float:
-            hasher.combine(value)
-        case let value as Double:
-            hasher.combine(value)
-        case let value as String:
-            hasher.combine(value)
-        case let value as Data:
-            hasher.combine(value)
-        case let value as Date:
-            hasher.combine(value)
-        case let value as [String: ConfigurableKitAnyDecodable]:
-            hasher.combine(value)
-        case let value as [ConfigurableKitAnyDecodable]:
-            hasher.combine(value)
-        default:
-            break
-        }
+        AnyCodableShared.hash(contentValue, into: &hasher)
     }
 }

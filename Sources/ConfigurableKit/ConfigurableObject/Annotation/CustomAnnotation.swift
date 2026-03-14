@@ -1,5 +1,5 @@
 //
-//  CustomViewAnnotation.swift
+//  CustomAnnotation.swift
 //  ConfigurableKit
 //
 //  Created by 秋星桥 on 2025/1/5.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-open class CustomViewAnnotation: ConfigurableObject.AnnotationProtocol {
+open class CustomAnnotation: ConfigurableObject.AnnotationProtocol {
     let view: () -> (UIView)
     public init(view: @escaping () -> (UIView)) {
         self.view = view

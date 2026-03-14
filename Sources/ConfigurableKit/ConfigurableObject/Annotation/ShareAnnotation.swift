@@ -1,5 +1,5 @@
 //
-//  OpenLinkAnnotation.swift
+//  ShareAnnotation.swift
 //  ConfigurableKit
 //
 //  Created by 秋星桥 on 2025/1/5.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-open class OpenLinkAnnotation: ConfigurableObject.AnnotationProtocol {
+open class ShareAnnotation: ConfigurableObject.AnnotationProtocol {
     public let title: String.LocalizationValue
     public let url: URL
 
@@ -23,6 +23,6 @@ open class OpenLinkAnnotation: ConfigurableObject.AnnotationProtocol {
 
     @MainActor
     public func createView(fromObject _: ConfigurableObject) -> ConfigurableView {
-        ConfigurableLinkView(buttonTitle: title, url: url)
+        ConfigurableShareView(buttonTitle: title, url: url)
     }
 }

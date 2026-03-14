@@ -8,36 +8,70 @@
 import Foundation
 
 public extension ConfigurableObject {
-    struct AvailabilityRequirement {
-        let key: String
-        let match: any Hashable
-        let reversed: Bool
+    /// Determines whether a ConfigurableObject is available (enabled/visible)
+    /// based on the value of another stored configuration key.
+    ///
+    /// Subclass to implement custom matching logic beyond simple equality.
+    class AvailabilityRequirement {
+        public let key: String
 
-        public init(key: String, match: any Hashable = true, reversed: Bool = false) {
+        public init(key: String) {
             self.key = key
-            self.match = match
-            self.reversed = reversed
+        }
+
+        /// Override this method in subclasses to implement custom matching logic.
+        /// Return `true` if the object should be available given the current `target` value.
+        open func evaluate(against _: any Hashable) -> Bool {
+            false
         }
     }
 }
 
-extension ConfigurableObject.AvailabilityRequirement {
-    /// for better readability, compiler will handle the optimisation
-    func compare(with target: any Hashable) -> Bool {
-        let result = compareTypeAndHash(with: target)
-        switch reversed {
-        case true: return !result
-        case false: return result
+// MARK: - Built-in Requirements
+
+public extension ConfigurableObject {
+    /// Matches when the stored value equals the expected value.
+    class MatchRequirement: AvailabilityRequirement {
+        public let match: any Hashable
+
+        public init(key: String, match: any Hashable = true) {
+            self.match = match
+            super.init(key: key)
+        }
+
+        override public func evaluate(against target: any Hashable) -> Bool {
+            compareTypeAndHash(target, match)
+        }
+
+        private func compareTypeAndHash(_ target: any Hashable, _ expected: any Hashable) -> Bool {
+            if let compareTarget = target as? ConfigurableKitAnyCodable {
+                return ConfigurableKitAnyCodable(expected) == compareTarget
+            }
+            guard type(of: target) == type(of: expected) else {
+                return false
+            }
+            return target.hashValue == expected.hashValue
         }
     }
 
-    private func compareTypeAndHash(with target: any Hashable) -> Bool {
-        if let compareTarget = target as? ConfigurableKitAnyCodable {
-            return ConfigurableKitAnyCodable(match) == compareTarget
+    /// Matches when the stored value does NOT equal the expected value.
+    class NegatedMatchRequirement: MatchRequirement {
+        override public func evaluate(against target: any Hashable) -> Bool {
+            !super.evaluate(against: target)
         }
-        guard type(of: target) == type(of: match) else {
-            return false
-        }
-        return target.hashValue == match.hashValue
+    }
+}
+
+// MARK: - Convenience Factories
+
+public extension ConfigurableObject.AvailabilityRequirement {
+    /// Available when the value for `key` equals `match`.
+    static func match(key: String, value: any Hashable = true) -> ConfigurableObject.AvailabilityRequirement {
+        ConfigurableObject.MatchRequirement(key: key, match: value)
+    }
+
+    /// Available when the value for `key` does NOT equal `match`.
+    static func negatedMatch(key: String, value: any Hashable = true) -> ConfigurableObject.AvailabilityRequirement {
+        ConfigurableObject.NegatedMatchRequirement(key: key, match: value)
     }
 }

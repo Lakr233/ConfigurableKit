@@ -1,6 +1,6 @@
 //
 //  Annotation.swift
-//  TRApp
+//  ConfigurableKit
 //
 //  Created by 82Flex on 2024/11/7.
 //
@@ -14,14 +14,14 @@ public extension ConfigurableObject {
     enum Annotation {
         case submenu(children: () -> [ConfigurableObject])
 
-        case boolean
-        case list(selections: () -> [ListAnnotation.ValueItem])
+        case toggle
+        case menu(selections: () -> [MenuAnnotation.Option])
         case page(viewController: () -> (UIViewController))
         case action(handler: @MainActor (UIViewController) async -> Void)
 
-        case openLink(title: String.LocalizationValue, url: URL)
+        case link(title: String.LocalizationValue, url: URL)
         case quickLook(title: String.LocalizationValue, url: URL)
-        case shareLink(title: String.LocalizationValue, url: URL)
+        case share(title: String.LocalizationValue, url: URL)
 
         /// use custom view as entire cell, ignore other items
         case custom(view: () -> (UIView))
@@ -29,39 +29,29 @@ public extension ConfigurableObject {
         var mapObject: AnyAnnotation {
             switch self {
             case let .submenu(children): SubmenuAnnotation(children: children)
-            case .boolean: BooleanAnnotation()
-            case let .list(selections): ListAnnotation(selections: selections)
+            case .toggle: ToggleAnnotation()
+            case let .menu(selections): MenuAnnotation(selections: selections)
             case let .page(viewController): PageAnnotation(viewController: viewController)
             case let .action(handler): ActionAnnotation(handler: handler)
-            case let .openLink(title, url): OpenLinkAnnotation(title: title, url: url)
+            case let .link(title, url): LinkAnnotation(title: title, url: url)
             case let .quickLook(title, url): QuickLookAnnotation(title: title, url: url)
-            case let .shareLink(title, url): ShareLinkAnnotation(title: title, url: url)
-            case let .custom(view): CustomViewAnnotation(view: view)
+            case let .share(title, url): ShareAnnotation(title: title, url: url)
+            case let .custom(view): CustomAnnotation(view: view)
             }
         }
     }
 }
 
-public extension ConfigurableObject.Annotation {
-    @_disfavoredOverload
-    static func openLink(title: String, url: URL) -> Self {
-        .openLink(title: String.LocalizationValue(title), url: url)
-    }
-
-    @_disfavoredOverload
-    static func quickLook(title: String, url: URL) -> Self {
-        .quickLook(title: String.LocalizationValue(title), url: url)
-    }
-
-    @_disfavoredOverload
-    static func shareLink(title: String, url: URL) -> Self {
-        .shareLink(title: String.LocalizationValue(title), url: url)
+public extension ConfigurableObject {
+    protocol AnnotationProtocol {
+        @MainActor
+        func createView(fromObject object: ConfigurableObject) -> ConfigurableView
     }
 }
 
-public extension ConfigurableObject {
-    protocol AnnotationProtocol: AnyObject {
-        @MainActor
-        func createView(fromObject object: ConfigurableObject) -> ConfigurableView
+extension ConfigurableObject.Annotation: ConfigurableObject.AnnotationProtocol {
+    @MainActor
+    public func createView(fromObject object: ConfigurableObject) -> ConfigurableView {
+        mapObject.createView(fromObject: object)
     }
 }

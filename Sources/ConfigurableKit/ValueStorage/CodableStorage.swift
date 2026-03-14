@@ -35,7 +35,7 @@ public struct CodableStorage {
 }
 
 @propertyWrapper
-public struct BareCodableStorage<T: Codable> {
+public struct TypedStorage<T: Codable> {
     public let key: String
     public let defaultValue: T
     public var storage: KeyValueStorage
@@ -57,7 +57,7 @@ public struct BareCodableStorage<T: Codable> {
     }
 }
 
-public extension BareCodableStorage {
+public extension TypedStorage {
     init(key: String, defaultValue: T) {
         self.init(key: key, defaultValue: defaultValue, storage: ConfigurableKit.storage)
     }

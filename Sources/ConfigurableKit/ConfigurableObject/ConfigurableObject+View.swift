@@ -14,16 +14,27 @@ public extension ConfigurableObject {
         view.configure(icon: .image(optionalName: icon))
         view.configure(title: title)
         view.configure(description: explain)
+
+        metadataDidChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self, weak view] in
+                guard let self, let view else { return }
+                view.configure(icon: .image(optionalName: icon))
+                view.configure(title: title)
+                view.configure(description: explain)
+            }
+            .store(in: &view.cancellables)
+
         if let availabilityRequirement {
-            let publisher = __value.storage.valueUpdatePublisher
+            let publisher = valueStorage.storage.valueUpdatePublisher
                 .filter { $0.0 == availabilityRequirement.key }
                 .map { $0.1 ?? .init() }
                 .map { CodableStorage.decode(data: $0) ?? .init() }
-                .map { availabilityRequirement.compare(with: $0) }
+                .map { availabilityRequirement.evaluate(against: $0) }
                 .eraseToAnyPublisher()
-            let initialValue = __value.storage.value(forKey: availabilityRequirement.key)
+            let initialValue = valueStorage.storage.value(forKey: availabilityRequirement.key)
                 .map { CodableStorage.decode(data: $0) ?? .init() }
-                .map { availabilityRequirement.compare(with: $0) } ?? false
+                .map { availabilityRequirement.evaluate(against: $0) } ?? false
             view.subscribeToAvailability(publisher, initialValue: initialValue)
         }
         return view
