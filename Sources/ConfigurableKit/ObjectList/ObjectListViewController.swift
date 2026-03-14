@@ -205,10 +205,12 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
             : String(localized: "Select")
         let edit = UIAction(
             title: editTitle,
-            image: UIImage(systemName: tableView.isEditing ? "checkmark.circle" : "checkmark.circle")
+            image: UIImage(systemName: tableView.isEditing ? "checkmark.circle.fill" : "checkmark.circle"),
+            state: tableView.isEditing ? .on : .off
         ) { [weak self] _ in
             guard let self else { return }
             setEditing(!tableView.isEditing, animated: true)
+            rebuildActionsMenu()
         }
         children.append(edit)
 
