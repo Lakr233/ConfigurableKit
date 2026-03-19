@@ -85,6 +85,15 @@ open class ObjectListFormDataSource<Item: ObjectListFormItem>: ObjectListDataSou
         items.insert(item, at: dest)
     }
 
+    open func reorderItems(by orderedIDs: [UUID]) {
+        let orderedItems = orderedIDs.compactMap(item(for:))
+        guard !orderedItems.isEmpty else { return }
+
+        let orderedSet = Set(orderedIDs)
+        let remainingItems = items.filter { !orderedSet.contains($0.id) }
+        items = orderedItems + remainingItems
+    }
+
     // MARK: - Form Presentation
 
     private func presentForm(

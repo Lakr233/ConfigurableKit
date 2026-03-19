@@ -26,11 +26,21 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
     public let dataSource: DataSource
     public weak var delegate: ObjectListViewControllerDelegate?
 
-    private var diffableDataSource: UITableViewDiffableDataSource<Int, UUID>!
+    private var diffableDataSource: ReorderableTableViewDiffableDataSource<Int, UUID>!
     private let searchController = UISearchController(searchResultsController: nil)
     private var searchDebounceWorkItem: DispatchWorkItem?
     private var currentSortCriterion: ObjectListSortCriterion<Item>?
     private var cancellables = Set<AnyCancellable>()
+    private var pendingSnapshotReload = false
+    private var pendingSnapshotAnimated = false
+
+    private var currentSearchText: String {
+        searchController.searchBar.text ?? ""
+    }
+
+    private var isReorderingAllowed: Bool {
+        currentSearchText.isEmpty && currentSortCriterion == nil
+    }
 
     // MARK: - Init
 
@@ -71,10 +81,15 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
         applySnapshot(animated: false)
     }
 
+    override open func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        flushPendingSnapshotReloadIfNeeded()
+    }
+
     // MARK: - Diffable Data Source
 
     private func setupDiffableDataSource() {
-        diffableDataSource = UITableViewDiffableDataSource<Int, UUID>(
+        diffableDataSource = ReorderableTableViewDiffableDataSource<Int, UUID>(
             tableView: tableView
         ) { [weak self] tableView, _, itemID in
             guard let self else { return UITableViewCell() }
@@ -110,12 +125,24 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
             return cell
         }
 
+        diffableDataSource.canReorderItem = { [weak self] _ in
+            self?.isReorderingAllowed == true
+        }
+        diffableDataSource.onReorderedItems = { [weak self] orderedIDs in
+            self?.dataSource.reorderItems(by: orderedIDs)
+        }
         diffableDataSource.defaultRowAnimation = .fade
     }
 
     // MARK: - Snapshot
 
     private func applySnapshot(animated: Bool = true) {
+        guard isViewLoaded, view.window != nil, tableView.window != nil else {
+            pendingSnapshotReload = true
+            pendingSnapshotAnimated = pendingSnapshotAnimated || animated
+            return
+        }
+
         let items = filteredAndSortedItems()
         var snapshot = NSDiffableDataSourceSnapshot<Int, UUID>()
         snapshot.appendSections([0])
@@ -125,8 +152,16 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
         diffableDataSource.apply(snapshot, animatingDifferences: animated)
     }
 
+    private func flushPendingSnapshotReloadIfNeeded() {
+        guard pendingSnapshotReload, view.window != nil, tableView.window != nil else { return }
+        let animated = pendingSnapshotAnimated
+        pendingSnapshotReload = false
+        pendingSnapshotAnimated = false
+        applySnapshot(animated: animated)
+    }
+
     private func filteredAndSortedItems() -> [Item] {
-        let query = searchController.searchBar.text ?? ""
+        let query = currentSearchText
         var result: [Item] = if query.isEmpty {
             dataSource.items
         } else {
@@ -223,7 +258,19 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
     }
 
     private func buildSortMenu() -> UIMenu {
-        let actions = dataSource.sortCriteria.map { criterion in
+        var actions: [UIAction] = [
+            UIAction(
+                title: String(localized: "Manual Order"),
+                image: UIImage(systemName: "line.3.horizontal"),
+                state: currentSortCriterion == nil ? .on : .off
+            ) { [weak self] _ in
+                self?.currentSortCriterion = nil
+                self?.applySnapshot()
+                self?.rebuildActionsMenu()
+            },
+        ]
+
+        actions.append(contentsOf: dataSource.sortCriteria.map { criterion in
             UIAction(
                 title: String(localized: criterion.title),
                 image: UIImage(systemName: criterion.icon),
@@ -233,7 +280,7 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
                 self?.applySnapshot()
                 self?.rebuildActionsMenu()
             }
-        }
+        })
         return UIMenu(
             title: String(localized: "Sort By"),
             image: UIImage(systemName: "arrow.up.arrow.down"),
@@ -419,6 +466,7 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
         itemsForBeginning _: UIDragSession,
         at indexPath: IndexPath
     ) -> [UIDragItem] {
+        guard view.window != nil, tableView.window != nil, isReorderingAllowed else { return [] }
         guard let itemID = diffableDataSource.itemIdentifier(for: indexPath) else { return [] }
         let provider = NSItemProvider(object: itemID.uuidString as NSString)
         let dragItem = UIDragItem(itemProvider: provider)
@@ -431,29 +479,22 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
         dropSessionDidUpdate session: UIDropSession,
         withDestinationIndexPath _: IndexPath?
     ) -> UITableViewDropProposal {
+        guard view.window != nil, tableView.window != nil else {
+            return UITableViewDropProposal(operation: .cancel)
+        }
         guard session.localDragSession != nil else {
             return UITableViewDropProposal(operation: .cancel)
+        }
+        guard isReorderingAllowed else {
+            return UITableViewDropProposal(operation: .forbidden)
         }
         return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
     }
 
     open func tableView(
         _: UITableView,
-        performDropWith coordinator: UITableViewDropCoordinator
-    ) {
-        let destinationIndexPath = coordinator.destinationIndexPath
-            ?? IndexPath(row: dataSource.items.count, section: 0)
-
-        for item in coordinator.items {
-            guard let sourceID = item.dragItem.localObject as? UUID,
-                  let sourceIndex = dataSource.items.firstIndex(where: { $0.id == sourceID })
-            else { continue }
-
-            dataSource.moveItem(from: sourceIndex, to: destinationIndexPath.row)
-            applySnapshot(animated: false)
-            coordinator.drop(item.dragItem, toRowAt: destinationIndexPath)
-        }
-    }
+        performDropWith _: UITableViewDropCoordinator
+    ) {}
 
     // MARK: - Data Subscription
 

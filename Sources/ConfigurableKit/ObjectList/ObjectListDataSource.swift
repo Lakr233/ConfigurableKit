@@ -24,6 +24,7 @@ public protocol ObjectListDataSource<Item>: AnyObject {
     func editItem(_ item: Item, from viewController: UIViewController) async -> Item?
     func removeItems(_ ids: Set<Item.ID>)
     func moveItem(from sourceIndex: Int, to destinationIndex: Int)
+    func reorderItems(by orderedIDs: [Item.ID])
 
     // MARK: - Sort
 
@@ -50,6 +51,22 @@ public extension ObjectListDataSource {
     }
 
     func moveItem(from _: Int, to _: Int) {}
+
+    func reorderItems(by orderedIDs: [Item.ID]) {
+        var currentIDs = items.map(\.id)
+
+        for (destinationIndex, itemID) in orderedIDs.enumerated() {
+            guard let sourceIndex = currentIDs.firstIndex(of: itemID),
+                  sourceIndex != destinationIndex
+            else { continue }
+
+            moveItem(from: sourceIndex, to: destinationIndex)
+
+            let movedID = currentIDs.remove(at: sourceIndex)
+            let safeDestinationIndex = min(destinationIndex, currentIDs.count)
+            currentIDs.insert(movedID, at: safeDestinationIndex)
+        }
+    }
 
     var sortCriteria: [ObjectListSortCriterion<Item>] {
         []
