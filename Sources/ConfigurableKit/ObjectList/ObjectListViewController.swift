@@ -33,6 +33,7 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
     public func diffableItemIdentifier(for indexPath: IndexPath) -> UUID? {
         diffableDataSource.itemIdentifier(for: indexPath)
     }
+
     private var searchDebounceWorkItem: DispatchWorkItem?
     private var currentSortCriterion: ObjectListSortCriterion<Item>?
     private var cancellables = Set<AnyCancellable>()

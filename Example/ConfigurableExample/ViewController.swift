@@ -196,7 +196,7 @@ class ViewController: UIViewController {
             explain: "ObjectListFormItem demo with search, sort, CRUD, drag-drop",
             ephemeralAnnotation: ObjectListAnnotation(
                 dataSource: demoUserDataSource,
-                presentationStyle: .modal(style: .fullScreen)
+                presentationStyle: .push
             )
         ),
         ConfigurableObject {

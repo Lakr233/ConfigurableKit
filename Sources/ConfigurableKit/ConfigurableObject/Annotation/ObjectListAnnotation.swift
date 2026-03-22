@@ -27,6 +27,30 @@ open class ObjectListAnnotation: ConfigurableObject.AnnotationProtocol {
     }
 
     @MainActor
+    public init(
+        viewController: @MainActor @escaping () -> UIViewController,
+        presentationStyle: ConfigurablePagePresentationStyle = .push
+    ) {
+        self.presentationStyle = presentationStyle
+        viewControllerFactory = viewController
+    }
+
+    @MainActor
+    public init<Item>(
+        onSave: @MainActor @escaping (Item) -> Void,
+        viewController: @MainActor @escaping (ObjectListContext<Item>) -> UIViewController,
+        presentationStyle: ConfigurablePagePresentationStyle = .push
+    ) {
+        self.presentationStyle = presentationStyle
+        viewControllerFactory = {
+            let context = ObjectListContext<Item>(onSave: onSave)
+            let vc = viewController(context)
+            context.viewController = vc
+            return vc
+        }
+    }
+
+    @MainActor
     public func createView(fromObject _: ConfigurableObject) -> ConfigurableView {
         ConfigurablePageView(
             page: viewControllerFactory,
