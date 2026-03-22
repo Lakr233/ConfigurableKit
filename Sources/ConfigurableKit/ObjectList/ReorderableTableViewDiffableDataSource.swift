@@ -5,18 +5,18 @@
 
 import UIKit
 
-final class ReorderableTableViewDiffableDataSource<SectionIdentifierType: Hashable & Sendable, ItemIdentifierType: Hashable & Sendable>:
+public final class ReorderableTableViewDiffableDataSource<SectionIdentifierType: Hashable & Sendable, ItemIdentifierType: Hashable & Sendable>:
     UITableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType>
 {
-    var canReorderItem: ((ItemIdentifierType) -> Bool)?
-    var onReorderedItems: (([ItemIdentifierType]) -> Void)?
+    public var canReorderItem: ((ItemIdentifierType) -> Bool)?
+    public var onReorderedItems: (([ItemIdentifierType]) -> Void)?
 
-    override func tableView(_: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+    override public func tableView(_: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         guard let item = itemIdentifier(for: indexPath) else { return false }
         return canReorderItem?(item) ?? true
     }
 
-    override func tableView(
+    override public func tableView(
         _: UITableView,
         moveRowAt sourceIndexPath: IndexPath,
         to destinationIndexPath: IndexPath

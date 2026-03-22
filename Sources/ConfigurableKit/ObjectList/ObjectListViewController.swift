@@ -28,6 +28,11 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
 
     private var diffableDataSource: ReorderableTableViewDiffableDataSource<Int, UUID>!
     private let searchController = UISearchController(searchResultsController: nil)
+
+    /// Returns the item identifier (UUID) for the given index path, if any.
+    public func diffableItemIdentifier(for indexPath: IndexPath) -> UUID? {
+        diffableDataSource.itemIdentifier(for: indexPath)
+    }
     private var searchDebounceWorkItem: DispatchWorkItem?
     private var currentSortCriterion: ObjectListSortCriterion<Item>?
     private var cancellables = Set<AnyCancellable>()
