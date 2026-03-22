@@ -194,7 +194,10 @@ class ViewController: UIViewController {
             icon: "person.2",
             title: "User Management",
             explain: "ObjectListFormItem demo with search, sort, CRUD, drag-drop",
-            ephemeralAnnotation: ObjectListAnnotation(dataSource: demoUserDataSource)
+            ephemeralAnnotation: ObjectListAnnotation(
+                dataSource: demoUserDataSource,
+                presentationStyle: .modal(style: .fullScreen)
+            )
         ),
         ConfigurableObject {
             let label = UILabel()

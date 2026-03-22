@@ -10,12 +10,15 @@ import UIKit
 
 open class ObjectListAnnotation: ConfigurableObject.AnnotationProtocol {
     let viewControllerFactory: @MainActor () -> UIViewController
+    let presentationStyle: ConfigurablePagePresentationStyle
 
     @MainActor
     public init(
         dataSource: some ObjectListDataSource,
-        delegate: ObjectListViewControllerDelegate? = nil
+        delegate: ObjectListViewControllerDelegate? = nil,
+        presentationStyle: ConfigurablePagePresentationStyle = .push
     ) {
+        self.presentationStyle = presentationStyle
         viewControllerFactory = {
             let vc = ObjectListViewController(dataSource: dataSource)
             vc.delegate = delegate
@@ -25,6 +28,9 @@ open class ObjectListAnnotation: ConfigurableObject.AnnotationProtocol {
 
     @MainActor
     public func createView(fromObject _: ConfigurableObject) -> ConfigurableView {
-        ConfigurablePageView(page: viewControllerFactory)
+        ConfigurablePageView(
+            page: viewControllerFactory,
+            presentationStyle: presentationStyle
+        )
     }
 }

@@ -46,9 +46,6 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
 
     public init(dataSource: DataSource) {
         self.dataSource = dataSource
-        if !dataSource.sortCriteria.isEmpty {
-            currentSortCriterion = dataSource.sortCriteria.first
-        }
         super.init(style: .plain)
     }
 
@@ -137,7 +134,7 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
     // MARK: - Snapshot
 
     private func applySnapshot(animated: Bool = true) {
-        guard isViewLoaded, view.window != nil, tableView.window != nil else {
+        guard isViewLoaded, diffableDataSource != nil else {
             pendingSnapshotReload = true
             pendingSnapshotAnimated = pendingSnapshotAnimated || animated
             return
@@ -149,11 +146,12 @@ open class ObjectListViewController<DataSource: ObjectListDataSource>: UITableVi
         let ids = items.map(\.id)
         snapshot.appendItems(ids, toSection: 0)
         snapshot.reconfigureItems(ids)
-        diffableDataSource.apply(snapshot, animatingDifferences: animated)
+        let shouldAnimate = animated && view.window != nil && tableView.window != nil
+        diffableDataSource.apply(snapshot, animatingDifferences: shouldAnimate)
     }
 
     private func flushPendingSnapshotReloadIfNeeded() {
-        guard pendingSnapshotReload, view.window != nil, tableView.window != nil else { return }
+        guard pendingSnapshotReload, isViewLoaded, diffableDataSource != nil else { return }
         let animated = pendingSnapshotAnimated
         pendingSnapshotReload = false
         pendingSnapshotAnimated = false
