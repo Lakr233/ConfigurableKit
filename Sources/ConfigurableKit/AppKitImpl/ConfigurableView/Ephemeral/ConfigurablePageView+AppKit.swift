@@ -25,7 +25,8 @@
                 switch presentationStyle {
                 case .push:
                     parentViewController.ckPush(page, animated: true)
-                case let .modal(style, _):
+                case let .modal(style, embedInNavigationController):
+                    _ = embedInNavigationController
                     parentViewController.ckPresentModal(page, style: style, animated: true)
                 }
             }

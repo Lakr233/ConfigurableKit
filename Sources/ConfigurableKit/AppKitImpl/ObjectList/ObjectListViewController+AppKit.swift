@@ -2,7 +2,9 @@
     import AppKit
     import Combine
 
-    open class ObjectListViewController<DataSource: ObjectListDataSource>: NSViewController, NSTableViewDataSource, NSTableViewDelegate, NSMenuDelegate, ConfigurableSheetController.NavigationItemMenuProviding {
+    open class ObjectListViewController<DataSource: ObjectListDataSource>: NSViewController, NSTableViewDataSource, NSTableViewDelegate, NSMenuDelegate, ConfigurableSheetController.NavigationItemMenuProviding
+        where DataSource.Item.ID == UUID
+    {
         public typealias Item = DataSource.Item
 
         private final class ObjectListCellView: NSTableCellView {

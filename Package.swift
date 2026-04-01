@@ -11,7 +11,7 @@ let package = Package(
         .macOS(.v12),
     ],
     products: [
-        .library(name: "ConfigurableKit", type: .dynamic, targets: ["ConfigurableKit"]),
+        .library(name: "ConfigurableKit", targets: ["ConfigurableKit"]),
         .executable(name: "ConfigurableMacDemo", targets: ["ConfigurableMacDemo"]),
     ],
     dependencies: [

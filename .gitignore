@@ -123,8 +123,7 @@ fastlane/test_output
 __MACOSX/
 .AppleDouble
 .LSOverride
-Icon[
-]
+Icon[]
 
 # Thumbnails
 ._*

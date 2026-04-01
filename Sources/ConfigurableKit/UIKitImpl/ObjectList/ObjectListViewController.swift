@@ -19,6 +19,7 @@
         UISearchControllerDelegate,
         UITableViewDragDelegate,
         UITableViewDropDelegate
+        where DataSource.Item.ID == UUID
     {
         public typealias Item = DataSource.Item
 
