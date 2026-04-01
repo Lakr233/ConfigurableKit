@@ -6,10 +6,10 @@
 //  Renders as a page-push chevron row using ConfigurablePageView.
 //
 
-import UIKit
+import Foundation
 
 open class ObjectListAnnotation: ConfigurableObject.AnnotationProtocol {
-    let viewControllerFactory: @MainActor () -> UIViewController
+    let viewControllerFactory: @MainActor () -> CKViewController
     let presentationStyle: ConfigurablePagePresentationStyle
 
     @MainActor
@@ -28,7 +28,7 @@ open class ObjectListAnnotation: ConfigurableObject.AnnotationProtocol {
 
     @MainActor
     public init(
-        viewController: @MainActor @escaping () -> UIViewController,
+        viewController: @MainActor @escaping () -> CKViewController,
         presentationStyle: ConfigurablePagePresentationStyle = .push
     ) {
         self.presentationStyle = presentationStyle
@@ -38,7 +38,7 @@ open class ObjectListAnnotation: ConfigurableObject.AnnotationProtocol {
     @MainActor
     public init<Item>(
         onSave: @MainActor @escaping (Item) -> Void,
-        viewController: @MainActor @escaping (ObjectListContext<Item>) -> UIViewController,
+        viewController: @MainActor @escaping (ObjectListContext<Item>) -> CKViewController,
         presentationStyle: ConfigurablePagePresentationStyle = .push
     ) {
         self.presentationStyle = presentationStyle

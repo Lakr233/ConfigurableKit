@@ -5,7 +5,12 @@
 //  Created by 秋星桥 on 1/28/25.
 //
 
-import UIKit
+import Foundation
+#if canImport(UIKit)
+    import UIKit
+#elseif canImport(AppKit)
+    import AppKit
+#endif
 
 open class ConfigurableSectionHeaderView: ConfigurableView {
     override open func commitInit() {
@@ -16,13 +21,23 @@ open class ConfigurableSectionHeaderView: ConfigurableView {
         descriptionLabel.removeFromSuperview()
         contentView.removeFromSuperview()
         titleLabel.font = .preferredFont(forTextStyle: .footnote).semibold
-        titleLabel.numberOfLines = 0
-        titleLabel.textColor = .label
+        #if canImport(UIKit)
+            titleLabel.numberOfLines = 0
+            titleLabel.textColor = .label
+        #elseif canImport(AppKit)
+            titleLabel.maximumNumberOfLines = 0
+            titleLabel.textColor = .labelColor
+        #endif
     }
 
     @discardableResult
     open func with(header: String.LocalizationValue) -> Self {
-        titleLabel.text = String(localized: header)
+        let localized = String(localized: header)
+        #if canImport(UIKit)
+            titleLabel.text = localized
+        #elseif canImport(AppKit)
+            titleLabel.stringValue = localized
+        #endif
         return self
     }
 
@@ -34,11 +49,15 @@ open class ConfigurableSectionHeaderView: ConfigurableView {
 
     @discardableResult
     open func with(rawHeader: String) -> Self {
-        titleLabel.text = rawHeader
+        #if canImport(UIKit)
+            titleLabel.text = rawHeader
+        #elseif canImport(AppKit)
+            titleLabel.stringValue = rawHeader
+        #endif
         return self
     }
 
-    override open func configure(icon _: UIImage?) {
+    override open func configure(icon _: CKImage?) {
         fatalError()
     }
 

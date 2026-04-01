@@ -5,7 +5,7 @@
 //  Created by 秋星桥 on 2025/1/5.
 //
 
-import UIKit
+import Foundation
 
 open class SubmenuAnnotation: ConfigurableObject.AnnotationProtocol {
     let children: () -> [ConfigurableObject]

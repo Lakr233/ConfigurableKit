@@ -5,10 +5,15 @@
 //  Created by 秋星桥 on 2024/2/13.
 //
 
-import UIKit
+import Foundation
+#if canImport(UIKit)
+    import UIKit
+#elseif canImport(AppKit)
+    import AppKit
+#endif
 
-public class AutoLayoutMarginView: UIView {
-    public var viewInsets: UIEdgeInsets {
+public class AutoLayoutMarginView: CKView {
+    public var viewInsets: CKEdgeInsets {
         didSet {
             viewTopConstraint?.constant = viewInsets.top
             viewLeadingConstraint?.constant = viewInsets.left
@@ -17,7 +22,7 @@ public class AutoLayoutMarginView: UIView {
         }
     }
 
-    var view: UIView {
+    var view: CKView {
         subviews.first!
     }
 
@@ -26,7 +31,7 @@ public class AutoLayoutMarginView: UIView {
     var viewBottomConstraint: NSLayoutConstraint?
     var viewTrailingConstraint: NSLayoutConstraint?
 
-    public init(_ view: UIView, insets: UIEdgeInsets = defaultMargin) {
+    public init(_ view: CKView, insets: CKEdgeInsets = defaultMargin) {
         viewInsets = insets
         super.init(frame: .zero)
         addSubview(view)
@@ -51,11 +56,11 @@ public class AutoLayoutMarginView: UIView {
 }
 
 @usableFromInline
-let defaultMargin = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+let defaultMargin = CKEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
 
-public extension UIStackView {
+public extension CKStackView {
     @discardableResult
-    func addArrangedSubviewWithMargin(_ view: UIView, adjustMargin: (inout UIEdgeInsets) -> Void = { _ in }) -> UIView {
+    func addArrangedSubviewWithMargin(_ view: CKView, adjustMargin: (inout CKEdgeInsets) -> Void = { _ in }) -> CKView {
         var margin = defaultMargin
         adjustMargin(&margin)
         let view = AutoLayoutMarginView(view, insets: margin)
@@ -64,7 +69,7 @@ public extension UIStackView {
     }
 
     @discardableResult
-    func insertArrangedSubviewWithMargin(_ view: UIView, at stackIndex: Int, adjustMargin: (inout UIEdgeInsets) -> Void = { _ in }) -> UIView {
+    func insertArrangedSubviewWithMargin(_ view: CKView, at stackIndex: Int, adjustMargin: (inout CKEdgeInsets) -> Void = { _ in }) -> CKView {
         var margin = defaultMargin
         adjustMargin(&margin)
         let view = AutoLayoutMarginView(view, insets: margin)

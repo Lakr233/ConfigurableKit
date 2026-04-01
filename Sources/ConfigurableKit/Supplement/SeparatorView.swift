@@ -5,9 +5,9 @@
 //  Created by 秋星桥 on 2025/1/4.
 //
 
-import UIKit
+import Foundation
 
-public protocol ConfigurableSeparatorProtocol: UIView {
+public protocol ConfigurableSeparatorProtocol: CKView {
     static var defaultHeight: CGFloat { get }
 }
 
@@ -17,12 +17,17 @@ public extension ConfigurableSeparatorProtocol {
     }
 }
 
-open class SeparatorView: UIView, ConfigurableSeparatorProtocol {
-    public static let color: UIColor = .gray.withAlphaComponent(0.1)
+open class SeparatorView: CKView, ConfigurableSeparatorProtocol {
+    public static let color: CKColor = .gray.withAlphaComponent(0.1)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = Self.color
+        #if canImport(UIKit)
+            backgroundColor = Self.color
+        #elseif canImport(AppKit)
+            wantsLayer = true
+            layer?.backgroundColor = Self.color.cgColor
+        #endif
     }
 
     @available(*, unavailable)

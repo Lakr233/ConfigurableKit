@@ -5,10 +5,10 @@
 //  Created by 秋星桥 on 2025/1/4.
 //
 
-import UIKit
+import Foundation
 
-extension UIStackView {
-    func addArrangedSubviews(_ views: [UIView]) {
+extension CKStackView {
+    func addArrangedSubviews(_ views: [CKView]) {
         views.forEach { addArrangedSubview($0) }
     }
 }

@@ -5,7 +5,7 @@
 //  Annotation that stores a string value and displays an inline text field.
 //
 
-import UIKit
+import Foundation
 
 open class TextInputAnnotation: ConfigurableObject.AnnotationProtocol {
     public let placeholder: String

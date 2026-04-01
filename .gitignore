@@ -123,7 +123,8 @@ fastlane/test_output
 __MACOSX/
 .AppleDouble
 .LSOverride
-Icon[]
+Icon[
+]
 
 # Thumbnails
 ._*
@@ -145,3 +146,6 @@ Temporary Items
 .apdisk
 /derived
 /Example/build
+
+.build/*
+.swiftpm/*

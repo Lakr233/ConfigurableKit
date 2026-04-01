@@ -8,9 +8,11 @@ let package = Package(
     platforms: [
         .iOS(.v16),
         .macCatalyst(.v16),
+        .macOS(.v12),
     ],
     products: [
-        .library(name: "ConfigurableKit", targets: ["ConfigurableKit"]),
+        .library(name: "ConfigurableKit", type: .dynamic, targets: ["ConfigurableKit"]),
+        .executable(name: "ConfigurableMacDemo", targets: ["ConfigurableMacDemo"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.3.0"),
@@ -19,5 +21,10 @@ let package = Package(
         .target(name: "ConfigurableKit", dependencies: [
             .product(name: "OrderedCollections", package: "swift-collections"),
         ]),
+        .executableTarget(
+            name: "ConfigurableMacDemo",
+            dependencies: ["ConfigurableKit"],
+            path: "Example/ConfigurableMacDemo"
+        ),
     ]
 )

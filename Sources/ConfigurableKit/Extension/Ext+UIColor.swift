@@ -5,16 +5,29 @@
 //  Created by 秋星桥 on 2025/1/4.
 //
 
-import UIKit
+import Foundation
 
-extension UIColor {
-    static var accent: UIColor {
-        if let color = UIColor(named: "AccentColor") {
-            return color
+#if canImport(UIKit)
+    import UIKit
+
+    extension UIColor {
+        static var accent: UIColor {
+            if let color = UIColor(named: "AccentColor") {
+                return color
+            }
+            if let color = UIColor(named: "accent") {
+                return color
+            }
+            return .systemBlue
         }
-        if let color = UIColor(named: "accent") {
-            return color
-        }
-        return .systemBlue
     }
-}
+
+#elseif canImport(AppKit)
+    import AppKit
+
+    extension NSColor {
+        static var accent: NSColor {
+            .controlAccentColor
+        }
+    }
+#endif

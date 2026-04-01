@@ -7,14 +7,18 @@
 
 import Combine
 import Foundation
-import UIKit
+#if canImport(UIKit)
+    import UIKit
+#endif
 
 public enum ConfigurableKit {
     public nonisolated(unsafe) static var storage: KeyValueStorage = UserDefaultKeyValueStorage(suite: .standard) {
         didSet {
-            MainActor.assumeIsolated {
-                assert(UIApplication.shared.delegate == nil)
-            }
+            #if canImport(UIKit)
+                MainActor.assumeIsolated {
+                    assert(UIApplication.shared.delegate == nil)
+                }
+            #endif
         }
     }
 

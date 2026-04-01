@@ -7,7 +7,6 @@
 
 import Combine
 import Foundation
-import UIKit
 
 enum ReservedKeys: String {
     case prefix = "ConfigurableValue.Reserved"
@@ -189,7 +188,7 @@ public extension ConfigurableObject {
         )
     }
 
-    convenience init(customView: @escaping () -> (UIView)) {
+    convenience init(customView: @escaping () -> (CKView)) {
         self.init(
             icon: "",
             title: "",

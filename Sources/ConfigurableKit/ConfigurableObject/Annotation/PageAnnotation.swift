@@ -5,12 +5,12 @@
 //  Created by 秋星桥 on 2025/1/5.
 //
 
-import UIKit
+import Foundation
 
 open class PageAnnotation: ConfigurableObject.AnnotationProtocol {
-    let viewController: () -> (UIViewController?)
+    let viewController: () -> (CKViewController?)
 
-    public init(viewController: @escaping () -> (UIViewController?)) {
+    public init(viewController: @escaping () -> (CKViewController?)) {
         self.viewController = viewController
     }
 

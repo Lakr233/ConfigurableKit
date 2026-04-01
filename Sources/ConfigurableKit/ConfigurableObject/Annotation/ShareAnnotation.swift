@@ -5,7 +5,7 @@
 //  Created by 秋星桥 on 2025/1/5.
 //
 
-import UIKit
+import Foundation
 
 open class ShareAnnotation: ConfigurableObject.AnnotationProtocol {
     public let title: String.LocalizationValue
