@@ -140,8 +140,8 @@
             escapeEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
                 guard let self else { return event }
                 guard event.keyCode == 53 else { return event }
-                guard event.window === self.view.window else { return event }
-                self.requestClose(animated: false)
+                guard event.window === view.window else { return event }
+                requestClose(animated: false)
                 return nil
             }
         }
