@@ -5,12 +5,12 @@
 //  Created by 秋星桥 on 2025/1/5.
 //
 
-import UIKit
+import Foundation
 
 open class ActionAnnotation: ConfigurableObject.AnnotationProtocol {
-    let handler: @MainActor (UIViewController) async -> Void
+    let handler: @MainActor (CKViewController) async -> Void
 
-    public init(handler: @escaping @MainActor (UIViewController) async -> Void) {
+    public init(handler: @escaping @MainActor (CKViewController) async -> Void) {
         self.handler = handler
     }
 

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 public extension ConfigurableObject {
     typealias AnyAnnotation = any AnnotationProtocol
@@ -17,15 +16,15 @@ public extension ConfigurableObject {
         case toggle
         case textInput(placeholder: String = "")
         case menu(selections: () -> [MenuAnnotation.Option])
-        case page(viewController: () -> (UIViewController))
-        case action(handler: @MainActor (UIViewController) async -> Void)
+        case page(viewController: () -> (CKViewController))
+        case action(handler: @MainActor (CKViewController) async -> Void)
 
         case link(title: String.LocalizationValue, url: URL)
         case quickLook(title: String.LocalizationValue, url: URL)
         case share(title: String.LocalizationValue, url: URL)
 
         /// use custom view as entire cell, ignore other items
-        case custom(view: () -> (UIView))
+        case custom(view: () -> (CKView))
 
         func createAnnotation() -> AnyAnnotation {
             switch self {

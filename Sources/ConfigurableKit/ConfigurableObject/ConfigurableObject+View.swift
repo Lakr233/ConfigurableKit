@@ -5,7 +5,10 @@
 //  Created by 秋星桥 on 2025/1/4.
 //
 
-import UIKit
+import Foundation
+#if canImport(AppKit)
+    import AppKit
+#endif
 
 public extension ConfigurableObject {
     @MainActor
@@ -41,11 +44,21 @@ public extension ConfigurableObject {
     }
 }
 
-public extension UIImage {
-    static func image(optionalName: String) -> UIImage? {
-        var image: UIImage?
-        if image == nil { image = .init(systemName: optionalName) }
-        if image == nil { image = .init(named: optionalName) }
-        return image
+public extension CKImage {
+    static func image(optionalName: String) -> CKImage? {
+        #if canImport(UIKit)
+            var image: CKImage?
+            if image == nil { image = .init(systemName: optionalName) }
+            if image == nil { image = .init(named: optionalName) }
+            return image
+        #elseif canImport(AppKit)
+            if let image = NSImage(systemSymbolName: optionalName, accessibilityDescription: nil) {
+                return image
+            }
+            if let image = NSImage(named: NSImage.Name(optionalName)) {
+                return image
+            }
+            return nil
+        #endif
     }
 }

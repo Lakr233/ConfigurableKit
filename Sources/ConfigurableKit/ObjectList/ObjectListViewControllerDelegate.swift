@@ -3,44 +3,56 @@
 //  ConfigurableKit
 //
 
-import UIKit
+import Foundation
+
+#if canImport(UIKit)
+    import UIKit
+
+    public typealias ObjectListBarButtonItem = UIBarButtonItem
+    public typealias ObjectListMenuElement = UIMenuElement
+#elseif canImport(AppKit)
+    import AppKit
+
+    public typealias ObjectListBarButtonItem = NSMenuItem
+    public typealias ObjectListMenuElement = NSMenuItem
+#endif
 
 @MainActor
 public protocol ObjectListViewControllerDelegate: AnyObject {
     /// Called after the view controller has loaded its view.
-    func objectListViewControllerDidLoad(_ controller: UIViewController)
+    func objectListViewControllerDidLoad(_ controller: CKViewController)
 
     /// Customize the leading navigation bar button items.
     func objectListViewController(
-        _ controller: UIViewController,
-        configureLeadingBarButtonItems items: inout [UIBarButtonItem]
+        _ controller: CKViewController,
+        configureLeadingBarButtonItems items: inout [ObjectListBarButtonItem]
     )
 
     /// Customize the trailing navigation bar button items.
     func objectListViewController(
-        _ controller: UIViewController,
-        configureTrailingBarButtonItems items: inout [UIBarButtonItem]
+        _ controller: CKViewController,
+        configureTrailingBarButtonItems items: inout [ObjectListBarButtonItem]
     )
 
     /// Customize the toolbar items shown during editing mode.
     func objectListViewController(
-        _ controller: UIViewController,
-        configureToolbarItems items: inout [UIBarButtonItem]
+        _ controller: CKViewController,
+        configureToolbarItems items: inout [ObjectListBarButtonItem]
     )
 
     /// Build additional context menu actions for a given item identifier.
     func objectListViewController(
-        _ controller: UIViewController,
+        _ controller: CKViewController,
         contextMenuActionsForItemWith id: UUID
-    ) -> [UIMenuElement]
+    ) -> [ObjectListMenuElement]
 }
 
 public extension ObjectListViewControllerDelegate {
-    func objectListViewControllerDidLoad(_: UIViewController) {}
-    func objectListViewController(_: UIViewController, configureLeadingBarButtonItems _: inout [UIBarButtonItem]) {}
-    func objectListViewController(_: UIViewController, configureTrailingBarButtonItems _: inout [UIBarButtonItem]) {}
-    func objectListViewController(_: UIViewController, configureToolbarItems _: inout [UIBarButtonItem]) {}
-    func objectListViewController(_: UIViewController, contextMenuActionsForItemWith _: UUID) -> [UIMenuElement] {
+    func objectListViewControllerDidLoad(_: CKViewController) {}
+    func objectListViewController(_: CKViewController, configureLeadingBarButtonItems _: inout [ObjectListBarButtonItem]) {}
+    func objectListViewController(_: CKViewController, configureTrailingBarButtonItems _: inout [ObjectListBarButtonItem]) {}
+    func objectListViewController(_: CKViewController, configureToolbarItems _: inout [ObjectListBarButtonItem]) {}
+    func objectListViewController(_: CKViewController, contextMenuActionsForItemWith _: UUID) -> [ObjectListMenuElement] {
         []
     }
 }

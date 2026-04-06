@@ -5,11 +5,11 @@
 //  Created by 秋星桥 on 2025/1/5.
 //
 
-import UIKit
+import Foundation
 
 open class CustomAnnotation: ConfigurableObject.AnnotationProtocol {
-    let view: () -> (UIView)
-    public init(view: @escaping () -> (UIView)) {
+    let view: () -> (CKView)
+    public init(view: @escaping () -> (CKView)) {
         self.view = view
     }
 

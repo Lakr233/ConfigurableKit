@@ -145,3 +145,6 @@ Temporary Items
 .apdisk
 /derived
 /Example/build
+
+.build/*
+.swiftpm/*
