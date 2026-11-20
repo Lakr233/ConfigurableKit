@@ -48,8 +48,14 @@
                 contentView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.heightAnchor),
 
                 stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-                stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
-                stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
+                // A vertically scrolling scroll view only adds the safe area to its
+                // vertical content inset, never sideways. Pin the stack to the
+                // horizontal safe area so rows stay clear of side insets (landscape
+                // notch, iPad sidebar overlay, iPhone Duo side status bar). The
+                // scroll view itself still spans the whole view. With no side
+                // insets this is the same as pinning to the content view.
+                stackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0),
+                stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
                 stackView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0),
             ])
 

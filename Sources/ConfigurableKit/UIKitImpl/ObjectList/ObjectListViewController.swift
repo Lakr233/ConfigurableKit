@@ -41,6 +41,9 @@
         private var cancellables = Set<AnyCancellable>()
         private var pendingSnapshotReload = false
         private var pendingSnapshotAnimated = false
+        /// The separator inset this class last set; a different value means the
+        /// app set its own inset, which is then left alone.
+        private var managedSeparatorInset: UIEdgeInsets = .zero
 
         private var currentSearchText: String {
             searchController.searchBar.text ?? ""
@@ -72,7 +75,8 @@
 
             view.backgroundColor = .systemBackground
             tableView.separatorStyle = .singleLine
-            tableView.separatorInset = .zero
+            tableView.separatorInset = managedSeparatorInset
+            updateSeparatorInsetForSafeArea()
             tableView.allowsMultipleSelectionDuringEditing = true
 
             setupDiffableDataSource()
@@ -87,6 +91,25 @@
         override open func viewWillAppear(_ animated: Bool) {
             super.viewWillAppear(animated)
             applySnapshot(animated: false)
+        }
+
+        override open func viewSafeAreaInsetsDidChange() {
+            super.viewSafeAreaInsetsDidChange()
+            updateSeparatorInsetForSafeArea()
+        }
+
+        /// Keeps the edge-to-edge separators between the left and right safe area
+        /// insets. Cells span the whole table, safe area included, and the inset
+        /// is measured from the cell edges, so `.zero` would draw separators under
+        /// side insets (landscape notch, iPhone Duo side status bar). With no side
+        /// insets this stays `.zero`.
+        private func updateSeparatorInsetForSafeArea() {
+            guard tableView.separatorInset == managedSeparatorInset else { return }
+            let safeArea = tableView.safeAreaInsets
+            let inset = UIEdgeInsets(top: 0, left: safeArea.left, bottom: 0, right: safeArea.right)
+            managedSeparatorInset = inset
+            guard tableView.separatorInset != inset else { return }
+            tableView.separatorInset = inset
         }
 
         override open func viewDidAppear(_ animated: Bool) {
@@ -301,7 +324,23 @@
         override open func setEditing(_ editing: Bool, animated: Bool) {
             super.setEditing(editing, animated: animated)
             tableView.setEditing(editing, animated: animated)
+            remeasureRowsAfterEditingChange(animated: animated)
             updateEditingUI()
+        }
+
+        /// The selection and reorder controls change the width of every row, so
+        /// the multi-line descriptions wrap differently, but toggling edit mode
+        /// does not ask self-sizing rows for their heights again. Without this a
+        /// row keeps its old height and its title is clipped.
+        private func remeasureRowsAfterEditingChange(animated: Bool) {
+            guard tableView.window != nil else { return }
+            if animated {
+                tableView.performBatchUpdates(nil)
+            } else {
+                UIView.performWithoutAnimation {
+                    tableView.performBatchUpdates(nil)
+                }
+            }
         }
 
         private func updateEditingUI() {
