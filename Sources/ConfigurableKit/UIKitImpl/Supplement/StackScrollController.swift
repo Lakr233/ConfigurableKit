@@ -89,11 +89,32 @@
                     return nil
                 }.forEach { separator in
                     separator.translatesAutoresizingMaskIntoConstraints = false
+                    let height = separator.heightAnchor.constraint(
+                        equalToConstant: type(of: separator).pixelAlignedHeight(scale: displayScale)
+                    )
+                    separatorHeightConstraints.append((type(of: separator), height))
                     NSLayoutConstraint.activate([
-                        separator.heightAnchor.constraint(equalToConstant: type(of: separator).defaultHeight),
+                        height,
                         separator.widthAnchor.constraint(equalTo: stackView.widthAnchor),
                     ])
                 }
+        }
+
+        private var separatorHeightConstraints: [(any ConfigurableSeparatorProtocol.Type, NSLayoutConstraint)] = []
+
+        private var displayScale: CGFloat {
+            view.window?.windowScene?.screen.scale ?? traitCollection.displayScale
+        }
+
+        override open func viewWillLayoutSubviews() {
+            super.viewWillLayoutSubviews()
+            // The scale is only known once the view is in a window, and it
+            // changes when the window moves to another screen.
+            let scale = displayScale
+            for (type, constraint) in separatorHeightConstraints {
+                let height = type.pixelAlignedHeight(scale: scale)
+                if constraint.constant != height { constraint.constant = height }
+            }
         }
 
         open func setupContentViews() { /* stub */ }

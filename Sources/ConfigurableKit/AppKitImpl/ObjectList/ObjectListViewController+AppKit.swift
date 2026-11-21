@@ -558,7 +558,13 @@
 
         private func rowHeight(for item: Item) -> CGFloat {
             let presentation = dataSource.rowPresentation(for: item)
-            return presentation.detail.isEmpty ? 48 : 60
+            guard !presentation.detail.isEmpty else { return 48 }
+            // 60 points fit one line of detail; each further line adds one
+            // line of the description font.
+            let lines = presentation.detail.split(separator: "\n", omittingEmptySubsequences: false).count
+            let font = NSFont.preferredFont(forTextStyle: .footnote)
+            let lineHeight = ceil(font.ascender - font.descender + font.leading)
+            return 60 + CGFloat(lines - 1) * lineHeight
         }
     }
 #endif
