@@ -20,6 +20,9 @@
             self.placeholder = placeholder
             super.init(storage: storage)
 
+            // The field grows while people type; keep it in place instead of
+            // moving it under the title mid-edit.
+            valuePlacement = .trailing
             textField.textAlignment = .right
             textField.font = .preferredFont(forTextStyle: .body)
             textField.adjustsFontForContentSizeCategory = true

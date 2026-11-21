@@ -26,5 +26,6 @@ let package = Package(
             dependencies: ["ConfigurableKit"],
             path: "Example/ConfigurableMacDemo"
         ),
+        .testTarget(name: "ConfigurableKitTests", dependencies: ["ConfigurableKit"]),
     ]
 )
