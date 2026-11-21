@@ -44,4 +44,28 @@ struct ConfigurableRowLayoutTests {
             rowWidth: 340, valueWidth: 0, titleWidth: 90, isDescriptionVisible: true, spacing: 10
         ))
     }
+
+    @Test func textValueWrapsBesideTitleBeforeMovingBelow() {
+        // 160 points are left beside an explanation in a 340 point row.
+        func arrangement(lines: Int, width: CGFloat = 300) -> ConfigurableValueArrangement {
+            ConfigurableRowLayout.valueArrangement(
+                rowWidth: 340, valueWidth: width, titleWidth: 90, isDescriptionVisible: true, spacing: 10,
+                lineCount: { available in
+                    #expect(available == 160)
+                    return lines
+                }
+            )
+        }
+        #expect(arrangement(lines: 1, width: 150) == .besideTitle)
+        #expect(arrangement(lines: 2) == .besideTitleWrapped)
+        #expect(arrangement(lines: 3) == .belowTitle)
+        // A value with a line break of its own wraps even though each line fits.
+        #expect(arrangement(lines: 2, width: 150) == .besideTitleWrapped)
+    }
+
+    @Test func availableWidthFollowsTheTitleWithoutExplanation() {
+        #expect(ConfigurableRowLayout.availableValueWidth(rowWidth: 340, titleWidth: 90, isDescriptionVisible: false, spacing: 10) == 240)
+        #expect(ConfigurableRowLayout.availableValueWidth(rowWidth: 340, titleWidth: 300, isDescriptionVisible: false, spacing: 10) == 160)
+        #expect(ConfigurableRowLayout.availableValueWidth(rowWidth: 340, titleWidth: 90, isDescriptionVisible: true, spacing: 10) == 160)
+    }
 }

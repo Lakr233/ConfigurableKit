@@ -19,6 +19,22 @@ import Foundation
         override open func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
             bounds.inset(by: easyHitInsets).contains(point)
         }
+
+        /// Set by `ConfigurableView` while the title wraps, so every line stays
+        /// aligned to the trailing edge even after the button sets a new title.
+        var wrappedTitleAlignment: NSTextAlignment? {
+            didSet {
+                guard oldValue != wrappedTitleAlignment else { return }
+                setNeedsLayout()
+            }
+        }
+
+        override open func layoutSubviews() {
+            super.layoutSubviews()
+            if let wrappedTitleAlignment, let titleLabel, titleLabel.textAlignment != wrappedTitleAlignment {
+                titleLabel.textAlignment = wrappedTitleAlignment
+            }
+        }
     }
 
 #elseif canImport(AppKit)

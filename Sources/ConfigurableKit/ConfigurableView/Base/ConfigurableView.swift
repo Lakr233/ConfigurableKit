@@ -52,8 +52,16 @@ let elementSpacing: CGFloat = 10
             }
         }
 
+        /// Where the value currently is: beside the title on one line, wrapped
+        /// beside the title, or on its own line under the title.
+        public private(set) var valueArrangement: ConfigurableValueArrangement = .besideTitle
+
         /// Whether the value is currently on its own line under the title.
-        public private(set) var isValueBelowTitle = false
+        public var isValueBelowTitle: Bool { valueArrangement == .belowTitle }
+
+        /// Whether the value currently wraps over more than one line, beside
+        /// or under the title.
+        public var isValueWrapped: Bool { valueArrangement != .besideTitle }
 
         var inheritedDescriptionStyle: ConfigurableDescriptionStyle? {
             didSet {
@@ -68,18 +76,14 @@ let elementSpacing: CGFloat = 10
         private lazy var trailingValueConstraints: [NSLayoutConstraint] = [
             contentContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
         ]
-        private lazy var belowTitleValueConstraints: [NSLayoutConstraint] = {
-            let hugging = contentContainer.widthAnchor.constraint(equalTo: contentView.widthAnchor)
-            hugging.priority = .defaultLow
-            return [
-                contentContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                contentContainer.trailingAnchor.constraint(greaterThanOrEqualTo: contentView.trailingAnchor),
-                contentContainer.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor),
-                hugging,
-                verticalStack.widthAnchor.constraint(equalTo: widthAnchor),
-                descriptionLabel.widthAnchor.constraint(equalTo: widthAnchor),
-            ]
-        }()
+        private lazy var belowTitleValueConstraints: [NSLayoutConstraint] = [
+            contentContainer.widthAnchor.constraint(equalTo: widthAnchor),
+            verticalStack.widthAnchor.constraint(equalTo: widthAnchor),
+            descriptionLabel.widthAnchor.constraint(equalTo: widthAnchor),
+        ]
+        /// The width of a wrapped value, so it wraps where it was measured.
+        private lazy var wrappedValueWidthConstraint: NSLayoutConstraint =
+            contentView.widthAnchor.constraint(equalToConstant: 0)
 
         private lazy var wrappedValueHeightConstraint: NSLayoutConstraint = {
             let constraint = contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 0)
@@ -292,22 +296,17 @@ let elementSpacing: CGFloat = 10
             return width == UIView.noIntrinsicMetric ? 0 : ceil(width)
         }
 
-        /// Called after the value moved under the title or back beside it
-        /// (see `isValueBelowTitle`).
+        /// Called after the value changed between one line beside the title,
+        /// wrapped beside the title and under the title (see `valueArrangement`).
         ///
-        /// The default lets a button or label wrap, aligned to the leading edge,
-        /// while it is under the title, and puts back its own line settings when
-        /// it returns beside the title. Override it to adjust a custom value view.
+        /// The default lets a button or label wrap, aligned to the trailing edge,
+        /// while it is wrapped or under the title, and puts back its own line
+        /// settings when it returns to one line beside the title. Override it to
+        /// adjust a custom value view.
         open func valuePlacementDidChange() {
-            if isValueBelowTitle {
-                let label: UILabel?
+            if isValueWrapped {
                 let button = contentView as? UIButton
-                if let button {
-                    label = button.titleLabel
-                } else {
-                    label = contentView as? UILabel
-                }
-                guard let label else { return }
+                guard let label = valueTextLabel else { return }
                 if originalValueAppearance == nil {
                     originalValueAppearance = .init(
                         numberOfLines: label.numberOfLines,
@@ -318,19 +317,106 @@ let elementSpacing: CGFloat = 10
                 }
                 label.numberOfLines = 0
                 label.lineBreakMode = .byWordWrapping
-                label.textAlignment = .natural
-                button?.contentHorizontalAlignment = .leading
+                let trailing: NSTextAlignment = effectiveUserInterfaceLayoutDirection == .rightToLeft ? .left : .right
+                label.textAlignment = trailing
+                button?.contentHorizontalAlignment = .trailing
+                (button as? EasyHitButton)?.wrappedTitleAlignment = trailing
             } else if let original = originalValueAppearance {
                 originalValueAppearance = nil
                 let button = contentView as? UIButton
-                guard let label = button?.titleLabel ?? contentView as? UILabel else { return }
+                guard let label = valueTextLabel else { return }
                 label.numberOfLines = original.numberOfLines
                 label.lineBreakMode = original.lineBreakMode
+                (button as? EasyHitButton)?.wrappedTitleAlignment = nil
                 label.textAlignment = original.textAlignment
                 if let alignment = original.contentHorizontalAlignment {
                     button?.contentHorizontalAlignment = alignment
                 }
             }
+        }
+
+        /// The label showing the value's text, when the value is a button or a label.
+        private var valueTextLabel: UILabel? {
+            if let button = contentView as? UIButton { return button.titleLabel }
+            return contentView as? UILabel
+        }
+
+        /// The value's text as it is drawn, for measuring how it wraps.
+        private var valueText: NSAttributedString? {
+            if let button = contentView as? UIButton {
+                if let attributed = button.currentAttributedTitle, attributed.length > 0 {
+                    return attributed
+                }
+                guard let title = button.currentTitle, !title.isEmpty,
+                      let font = button.titleLabel?.font else { return nil }
+                return NSAttributedString(string: title, attributes: [.font: font])
+            }
+            if let label = contentView as? UILabel, let text = label.attributedText, text.length > 0 {
+                return text
+            }
+            return nil
+        }
+
+        /// The size the value's text needs when it may use `width` points.
+        private func valueTextSize(_ text: NSAttributedString, width: CGFloat) -> CGSize {
+            let rect = text.boundingRect(
+                with: CGSize(width: max(width, 1), height: .greatestFiniteMagnitude),
+                options: [.usesLineFragmentOrigin, .usesFontLeading],
+                context: nil
+            )
+            return CGSize(width: ceil(rect.width), height: ceil(rect.height))
+        }
+
+        /// How the value's text is measured: the text, the padding of the view
+        /// around it, and the height of one line.
+        private struct ValueTextMetrics {
+            var text: NSAttributedString
+            var horizontalInset: CGFloat
+            var verticalInset: CGFloat
+            var lineHeight: CGFloat
+        }
+
+        private var valueTextMetrics: ValueTextMetrics? {
+            guard let text = valueText, let font = valueTextLabel?.font else { return nil }
+            let oneLine = valueTextSize(text, width: .greatestFiniteMagnitude)
+            var horizontalInset: CGFloat = 0
+            var verticalInset: CGFloat = 0
+            if contentView is UIButton {
+                let intrinsic = contentView.intrinsicContentSize
+                if intrinsic.width != UIView.noIntrinsicMetric {
+                    horizontalInset = max(intrinsic.width - oneLine.width, 0)
+                }
+                if intrinsic.height != UIView.noIntrinsicMetric {
+                    verticalInset = max(intrinsic.height - ceil(font.lineHeight), 0)
+                }
+            }
+            return .init(text: text, horizontalInset: horizontalInset, verticalInset: verticalInset, lineHeight: font.lineHeight)
+        }
+
+        private func lineCount(of metrics: ValueTextMetrics, width: CGFloat) -> Int {
+            let height = valueTextSize(metrics.text, width: width - metrics.horizontalInset).height
+            return max(1, Int((height / max(metrics.lineHeight, 1)).rounded()))
+        }
+
+        /// Gives a wrapped value the width and height its text needs when it may
+        /// use `width` points.
+        private func updateWrappedValueSize(metrics: ValueTextMetrics?, width: CGFloat) {
+            guard isValueWrapped, let metrics, width > 0 else {
+                NSLayoutConstraint.deactivate([wrappedValueWidthConstraint, wrappedValueHeightConstraint])
+                return
+            }
+            let size = valueTextSize(metrics.text, width: width - metrics.horizontalInset)
+            // One point of slack so the label, which measures the same way,
+            // never wraps a line more than measured here.
+            let valueWidth = min(size.width + 1 + metrics.horizontalInset, width)
+            let valueHeight = size.height + metrics.verticalInset
+            if abs(wrappedValueWidthConstraint.constant - valueWidth) > 0.5 {
+                wrappedValueWidthConstraint.constant = valueWidth
+            }
+            if abs(wrappedValueHeightConstraint.constant - valueHeight) > 0.5 {
+                wrappedValueHeightConstraint.constant = valueHeight
+            }
+            NSLayoutConstraint.activate([wrappedValueWidthConstraint, wrappedValueHeightConstraint])
         }
 
         /// The row keeps its value beside the title when a subclass changed the
@@ -367,31 +453,53 @@ let elementSpacing: CGFloat = 10
 
         private func resolveValuePlacement(forWidth rowWidth: CGFloat) {
             guard rowWidth > 0, rowWidth.isFinite, supportsValueBelowTitle else { return }
-            let below: Bool
+            let metrics = valueTextMetrics
+            var lineCounter: ((CGFloat) -> Int)?
+            if let metrics {
+                lineCounter = { [unowned self] width in lineCount(of: metrics, width: width) }
+            }
+            let arrangement: ConfigurableValueArrangement
             switch valuePlacement {
             case .trailing:
-                below = false
+                arrangement = .besideTitle
             case .belowTitle:
-                below = true
+                arrangement = .belowTitle
             case .automatic:
-                below = ConfigurableRowLayout.prefersValueBelowTitle(
+                arrangement = ConfigurableRowLayout.valueArrangement(
                     rowWidth: rowWidth,
                     valueWidth: naturalValueWidth(),
                     titleWidth: titleNaturalWidth,
                     isDescriptionVisible: isDescriptionVisible,
-                    spacing: spacing
+                    spacing: spacing,
+                    lineCount: lineCounter
                 )
             }
-            setValueBelowTitle(below)
+            setValueArrangement(arrangement)
+            switch valueArrangement {
+            case .besideTitle:
+                updateWrappedValueSize(metrics: nil, width: 0)
+            case .besideTitleWrapped:
+                updateWrappedValueSize(
+                    metrics: metrics,
+                    width: ConfigurableRowLayout.availableValueWidth(
+                        rowWidth: rowWidth,
+                        titleWidth: titleNaturalWidth,
+                        isDescriptionVisible: isDescriptionVisible,
+                        spacing: spacing
+                    )
+                )
+            case .belowTitle:
+                updateWrappedValueSize(metrics: metrics, width: rowWidth)
+            }
         }
 
-        private func setValueBelowTitle(_ below: Bool) {
-            guard below != isValueBelowTitle else { return }
+        private func setValueArrangement(_ arrangement: ConfigurableValueArrangement) {
+            guard arrangement != valueArrangement else { return }
             guard supportsValueBelowTitle else { return }
-            isValueBelowTitle = below
+            let wasBelow = isValueBelowTitle
+            valueArrangement = arrangement
 
-            if below {
-                NSLayoutConstraint.deactivate(trailingValueConstraints)
+            if isValueBelowTitle, !wasBelow {
                 verticalStack.removeArrangedSubview(descriptionLabel)
                 addArrangedSubview(descriptionLabel)
                 axis = .vertical
@@ -399,44 +507,23 @@ let elementSpacing: CGFloat = 10
                 setCustomSpacing(2, after: verticalStack)
                 setCustomSpacing(2, after: contentContainer)
                 NSLayoutConstraint.activate(belowTitleValueConstraints)
-                NSLayoutConstraint.activate([wrappedValueHeightConstraint])
-            } else {
+            } else if !isValueBelowTitle, wasBelow {
                 NSLayoutConstraint.deactivate(belowTitleValueConstraints)
-                NSLayoutConstraint.deactivate([wrappedValueHeightConstraint])
-                wrappedValueHeightConstraint.constant = 0
                 removeArrangedSubview(descriptionLabel)
                 verticalStack.addArrangedSubview(descriptionLabel)
                 setCustomSpacing(UIStackView.spacingUseDefault, after: verticalStack)
                 setCustomSpacing(UIStackView.spacingUseDefault, after: contentContainer)
                 axis = .horizontal
                 alignment = .center
-                NSLayoutConstraint.activate(trailingValueConstraints)
             }
             valuePlacementDidChange()
             invalidateIntrinsicContentSize()
             superview?.setNeedsLayout()
         }
 
-        /// A button keeps a one-line height even when its title wraps, so give
-        /// it the height its wrapped title needs while it is under the title.
-        private func updateWrappedValueHeight() {
-            guard isValueBelowTitle else { return }
-            var height: CGFloat = 0
-            if let button = contentView as? UIButton, let label = button.titleLabel,
-               label.numberOfLines != 1, contentView.bounds.width > 0
-            {
-                let size = label.sizeThatFits(CGSize(width: contentView.bounds.width, height: .greatestFiniteMagnitude))
-                height = ceil(size.height)
-            }
-            if abs(wrappedValueHeightConstraint.constant - height) > 0.5 {
-                wrappedValueHeightConstraint.constant = height
-            }
-        }
-
         override open func layoutSubviews() {
             resolveValuePlacement(forWidth: bounds.width)
             super.layoutSubviews()
-            updateWrappedValueHeight()
         }
 
         override open func systemLayoutSizeFitting(

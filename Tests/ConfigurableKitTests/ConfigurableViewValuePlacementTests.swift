@@ -30,15 +30,31 @@
             return row
         }
 
+        /// A view that holds a row at a fixed width, like a page does.
+        final class LayoutHost: UIView {
+            static var all: [LayoutHost] = []
+        }
+
         private func layout(_ row: UIView, width: CGFloat) -> CGSize {
-            let size = row.systemLayoutSizeFitting(
-                CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),
-                withHorizontalFittingPriority: .required,
-                verticalFittingPriority: .fittingSizeLevel
-            )
-            row.frame = CGRect(origin: .zero, size: CGSize(width: width, height: size.height))
-            row.layoutIfNeeded()
-            return size
+            let host: LayoutHost
+            if let existing = row.superview as? LayoutHost {
+                host = existing
+            } else {
+                host = LayoutHost()
+                LayoutHost.all.append(host)
+                host.addSubview(row)
+                row.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    row.leadingAnchor.constraint(equalTo: host.leadingAnchor),
+                    row.trailingAnchor.constraint(equalTo: host.trailingAnchor),
+                    row.topAnchor.constraint(equalTo: host.topAnchor),
+                ])
+            }
+            host.frame = CGRect(x: 0, y: 0, width: width, height: 2000)
+            host.setNeedsLayout()
+            host.layoutIfNeeded()
+            host.layoutIfNeeded()
+            return row.bounds.size
         }
 
         @Test func shortValueStaysBesideTitle() {
@@ -55,7 +71,10 @@
             #expect(row.isValueBelowTitle)
             #expect(row.axis == .vertical)
             #expect(row.button.titleLabel?.numberOfLines == 0)
-            #expect(row.button.contentHorizontalAlignment == .leading)
+            // Still aligned to the trailing edge, line by line.
+            #expect(row.button.contentHorizontalAlignment == .trailing)
+            #expect(row.button.titleLabel?.textAlignment == .right)
+            #expect(abs(row.contentContainer.convert(row.button.frame, to: row).maxX - row.bounds.width) < 0.5)
             // Title, then value, then explanation.
             #expect(row.arrangedSubviews == [row.verticalStack, row.contentContainer, row.descriptionLabel])
             // The value is not cut off: its frame is as tall as its wrapped title.
@@ -85,26 +104,61 @@
                     host.layoutIfNeeded()
                     host.layoutIfNeeded()
                     #expect(row.bounds.width == 340)
+                    // Wherever the value is, all of it shows.
+                    let label = try! #require(row.button.titleLabel)
+                    if row.isValueWrapped {
+                        let needed = label.sizeThatFits(CGSize(width: label.bounds.width, height: .greatestFiniteMagnitude)).height
+                        #expect(row.button.bounds.height + 0.5 >= ceil(needed), "wrapped value cut off (\(length) characters, \(style))")
+                    } else {
+                        #expect(
+                            row.button.bounds.width + 0.5 >= ceil(row.button.intrinsicContentSize.width),
+                            "value cut off beside the title (\(length) characters, \(style))"
+                        )
+                    }
                     guard !row.isValueBelowTitle else { continue }
+                    // Beside the title: at most two lines, and the title in full.
+                    let lines = Int((label.bounds.height / label.font.lineHeight).rounded())
+                    #expect(lines <= 2, "\(lines) lines beside the title (\(length) characters, \(style))")
                     let title = row.titleLabel
                     #expect(
                         title.bounds.width + 0.5 >= ceil(title.intrinsicContentSize.width),
                         "title cut off beside a \(length)-character value (\(style))"
                     )
-                    #expect(
-                        row.button.bounds.width + 0.5 >= ceil(row.button.intrinsicContentSize.width),
-                        "value cut off beside the title (\(length) characters, \(style))"
-                    )
                 }
             }
         }
 
+        @Test func valueWrapsBesideTitleOverTwoLinesFirst() {
+            let row = makeRow(value: "Sep 21, 2026 at 2:13:20 PM")
+            _ = layout(row, width: 300)
+            #expect(row.valueArrangement == .besideTitleWrapped)
+            #expect(!row.isValueBelowTitle)
+            #expect(row.axis == .horizontal)
+            #expect(row.button.titleLabel?.numberOfLines == 0)
+            #expect(row.button.titleLabel?.textAlignment == .right)
+            #expect(abs(row.contentContainer.convert(row.button.frame, to: row).maxX - row.bounds.width) < 0.5)
+            // The title is in full and the value fits in two lines, all visible.
+            #expect(row.titleLabel.bounds.width + 0.5 >= ceil(row.titleLabel.intrinsicContentSize.width))
+            let label = try! #require(row.button.titleLabel)
+            let needed = label.sizeThatFits(CGSize(width: label.bounds.width, height: .greatestFiniteMagnitude)).height
+            #expect(needed <= ceil(label.font.lineHeight * 2) + 1)
+            #expect(row.button.bounds.height + 0.5 >= ceil(needed))
+        }
+
+        @Test func valueWithTwoLinesOfItsOwnStaysBesideTitle() {
+            let row = makeRow(value: "16 pages, 64 bytes\n1 NDEF record")
+            _ = layout(row, width: 340)
+            #expect(row.valueArrangement == .besideTitleWrapped)
+            let label = try! #require(row.button.titleLabel)
+            #expect(row.button.bounds.height + 0.5 >= ceil(label.font.lineHeight * 2))
+        }
+
         @Test func valueReturnsBesideTitleWhenRowWidens() {
-            let row = makeRow(value: "Nov 21, 2026 at 9:10:38 PM")
+            let row = makeRow(value: "04 A2 B3 C4 D5 E6 90 11 22 33 44 55 66 77 88 99 AA BB CC")
             _ = layout(row, width: 300)
             #expect(row.isValueBelowTitle)
-            _ = layout(row, width: 900)
-            #expect(!row.isValueBelowTitle)
+            _ = layout(row, width: 1600)
+            #expect(row.valueArrangement == .besideTitle)
             #expect(row.axis == .horizontal)
             #expect(row.verticalStack.arrangedSubviews == [row.headerStackView, row.descriptionLabel])
             // The row's own line settings come back.
@@ -163,14 +217,14 @@
         }
 
         @Test func hiddenExplanationGivesValueMoreRoom() {
-            // About 200 points: below the title beside an explanation in a 340 point row,
-            // beside the title once the explanation is hidden.
+            // About 200 points: wrapped beside an explanation in a 340 point row,
+            // on one line beside the title once the explanation is hidden.
             let row = makeRow(value: "Nov 21, 2026 at 9:10 PM")
             _ = layout(row, width: 340)
-            #expect(row.isValueBelowTitle)
+            #expect(row.isValueWrapped)
             row.descriptionStyle = .hidden
             _ = layout(row, width: 340)
-            #expect(!row.isValueBelowTitle)
+            #expect(row.valueArrangement == .besideTitle)
         }
 
         @Test func pageStyleAppliesToRowsWithoutTheirOwn() {
