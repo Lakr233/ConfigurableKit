@@ -13,6 +13,26 @@
         public let contentView = UIView()
         public let stackView = UIStackView()
 
+        /// How the rows of this page show their explanation, unless a row sets
+        /// its own `descriptionStyle`. `nil` (the default) shows the full
+        /// explanation, which is what settings pages want. Pages that mostly
+        /// show data can pick `.singleLine` or `.hidden` to fit more rows.
+        open var descriptionStyle: ConfigurableDescriptionStyle? {
+            didSet {
+                guard oldValue != descriptionStyle, isViewLoaded else { return }
+                applyDescriptionStyle(to: view)
+            }
+        }
+
+        private func applyDescriptionStyle(to view: UIView) {
+            if let row = view as? ConfigurableView {
+                row.inheritedDescriptionStyle = descriptionStyle
+            }
+            for subview in view.subviews {
+                applyDescriptionStyle(to: subview)
+            }
+        }
+
         override open func viewDidLoad() {
             super.viewDidLoad()
 
