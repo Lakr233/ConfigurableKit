@@ -346,11 +346,22 @@ let elementSpacing: CGFloat = 10
             return verticalStack.arrangedSubviews == [headerStackView, descriptionLabel]
         }
 
+        /// The width the header (icon, title and the trailing spacer view) needs
+        /// to show the title in full, including the spacing between them.
         private var titleNaturalWidth: CGFloat {
-            var width = ceil(titleLabel.intrinsicContentSize.width)
-            if iconContainer.superview != nil, !iconContainer.isHidden {
-                width += ceil(titleLabel.intrinsicContentSize.height) + headerStackView.spacing
+            let visible = headerStackView.arrangedSubviews.filter { !$0.isHidden }
+            var width: CGFloat = 0
+            for view in visible {
+                if view === titleLabel {
+                    width += ceil(titleLabel.intrinsicContentSize.width)
+                } else if view === iconContainer {
+                    // The icon is square and as tall as the title.
+                    width += ceil(titleLabel.intrinsicContentSize.height)
+                } else {
+                    width += max(0, ceil(view.intrinsicContentSize.width))
+                }
             }
+            width += headerStackView.spacing * CGFloat(max(visible.count - 1, 0))
             return width
         }
 

@@ -64,6 +64,41 @@
             #expect(row.button.bounds.height + 0.5 >= ceil(needed))
         }
 
+        @Test func valueBesideTitleNeverTruncatesTheTitle() {
+            // Values just short of and just past what fits beside the title, in a
+            // row held at a fixed width like a table cell: either the title and the
+            // value both show in full beside each other, or the value moves under
+            // the title.
+            for style in [ConfigurableDescriptionStyle.hidden, .full] {
+                for length in stride(from: 10, through: 60, by: 1) {
+                    let row = makeRow(value: String(repeating: "8", count: length))
+                    row.configure(title: "Technical")
+                    row.descriptionStyle = style
+                    let host = UIView(frame: CGRect(x: 0, y: 0, width: 340, height: 600))
+                    host.addSubview(row)
+                    row.translatesAutoresizingMaskIntoConstraints = false
+                    NSLayoutConstraint.activate([
+                        row.leadingAnchor.constraint(equalTo: host.leadingAnchor),
+                        row.trailingAnchor.constraint(equalTo: host.trailingAnchor),
+                        row.topAnchor.constraint(equalTo: host.topAnchor),
+                    ])
+                    host.layoutIfNeeded()
+                    host.layoutIfNeeded()
+                    #expect(row.bounds.width == 340)
+                    guard !row.isValueBelowTitle else { continue }
+                    let title = row.titleLabel
+                    #expect(
+                        title.bounds.width + 0.5 >= ceil(title.intrinsicContentSize.width),
+                        "title cut off beside a \(length)-character value (\(style))"
+                    )
+                    #expect(
+                        row.button.bounds.width + 0.5 >= ceil(row.button.intrinsicContentSize.width),
+                        "value cut off beside the title (\(length) characters, \(style))"
+                    )
+                }
+            }
+        }
+
         @Test func valueReturnsBesideTitleWhenRowWidens() {
             let row = makeRow(value: "Nov 21, 2026 at 9:10:38 PM")
             _ = layout(row, width: 300)
