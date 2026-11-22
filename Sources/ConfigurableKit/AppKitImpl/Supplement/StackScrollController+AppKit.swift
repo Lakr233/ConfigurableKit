@@ -6,6 +6,26 @@
         public let stackView = NSStackView()
         private var stackTopConstraint: NSLayoutConstraint?
 
+        /// How the rows of this page show their explanation, unless a row sets
+        /// its own `descriptionStyle`. `nil` (the default) shows the full
+        /// explanation, which is what settings pages want. Pages that mostly
+        /// show data can pick `.singleLine` or `.hidden` to fit more rows.
+        open var descriptionStyle: ConfigurableDescriptionStyle? {
+            didSet {
+                guard oldValue != descriptionStyle, isViewLoaded else { return }
+                applyDescriptionStyle(to: view)
+            }
+        }
+
+        private func applyDescriptionStyle(to view: NSView) {
+            if let row = view as? ConfigurableView {
+                row.inheritedDescriptionStyle = descriptionStyle
+            }
+            for subview in view.subviews {
+                applyDescriptionStyle(to: subview)
+            }
+        }
+
         open var contentTopInset: CGFloat = 0 {
             didSet {
                 stackTopConstraint?.constant = max(contentTopInset, 0)
@@ -49,11 +69,32 @@
                 .compactMap { $0 as? any ConfigurableSeparatorProtocol }
                 .forEach { separator in
                     separator.translatesAutoresizingMaskIntoConstraints = false
+                    let height = separator.heightAnchor.constraint(
+                        equalToConstant: type(of: separator).pixelAlignedHeight(scale: displayScale)
+                    )
+                    separatorHeightConstraints.append((type(of: separator), height))
                     NSLayoutConstraint.activate([
-                        separator.heightAnchor.constraint(equalToConstant: type(of: separator).defaultHeight),
+                        height,
                         separator.widthAnchor.constraint(equalTo: stackView.widthAnchor),
                     ])
                 }
+        }
+
+        private var separatorHeightConstraints: [(any ConfigurableSeparatorProtocol.Type, NSLayoutConstraint)] = []
+
+        private var displayScale: CGFloat {
+            view.window?.backingScaleFactor ?? 0
+        }
+
+        override open func viewWillLayout() {
+            super.viewWillLayout()
+            // The scale is only known once the view is in a window, and it
+            // changes when the window moves to another screen.
+            let scale = displayScale
+            for (type, constraint) in separatorHeightConstraints {
+                let height = type.pixelAlignedHeight(scale: scale)
+                if constraint.constant != height { constraint.constant = height }
+            }
         }
 
         open func setupContentViews() {}

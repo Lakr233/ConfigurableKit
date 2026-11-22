@@ -27,6 +27,12 @@ open class ConfigurableObject {
         didSet { metadataSubject.send(()) }
     }
 
+    /// How the row shows `explain`. `nil` (the default) follows the page; see
+    /// `ConfigurableDescriptionStyle`.
+    public var descriptionStyle: ConfigurableDescriptionStyle? {
+        didSet { metadataSubject.send(()) }
+    }
+
     public let key: String
     public let annotation: AnyAnnotation
 
@@ -95,6 +101,13 @@ open class ConfigurableObject {
 
     public func publisher<T: Codable>(forKey key: String, type _: T) -> AnyPublisher<T?, Never> {
         ConfigurableKit.publisher(forKey: key, type: T.self, storage: valueStorage.storage)
+    }
+
+    /// Sets how the row shows `explain`, for use inside a manifest list.
+    @discardableResult
+    public func withDescriptionStyle(_ style: ConfigurableDescriptionStyle?) -> Self {
+        descriptionStyle = style
+        return self
     }
 
     @discardableResult

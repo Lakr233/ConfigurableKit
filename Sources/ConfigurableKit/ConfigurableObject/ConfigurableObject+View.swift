@@ -17,6 +17,11 @@ public extension ConfigurableObject {
         view.configure(icon: .image(optionalName: icon))
         view.configure(title: title)
         view.configure(description: explain)
+        // Leave a style the annotation's view chose alone unless the object sets one.
+        var objectSetsDescriptionStyle = descriptionStyle != nil
+        if let descriptionStyle {
+            view.descriptionStyle = descriptionStyle
+        }
 
         metadataDidChange
             .receive(on: DispatchQueue.main)
@@ -25,6 +30,10 @@ public extension ConfigurableObject {
                 view.configure(icon: .image(optionalName: icon))
                 view.configure(title: title)
                 view.configure(description: explain)
+                if objectSetsDescriptionStyle || descriptionStyle != nil {
+                    view.descriptionStyle = descriptionStyle
+                    objectSetsDescriptionStyle = descriptionStyle != nil
+                }
             }
             .store(in: &view.cancellables)
 

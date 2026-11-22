@@ -48,7 +48,8 @@ open class ObjectListFormDataSource<Item: ObjectListFormItem>: ObjectListDataSou
         let details = fields.dropFirst()
             .map { $0.displayValue(from: item) }
             .filter { !$0.isEmpty }
-            .joined(separator: " · ")
+            // One field per line, so each reads on its own.
+            .joined(separator: "\n")
 
         return .init(icon: primary.icon, title: titleText, detail: details)
     }
